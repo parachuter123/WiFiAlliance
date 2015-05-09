@@ -1,0 +1,93 @@
+ html{
+	height:100%;
+	font-family: sans-serif;
+}
+body {
+	    background-color: #ededed;
+	    color: #686868;
+	    font-family: "Microsoft YaHei","微软雅黑",Helvetica,"黑体",Arial,Tahoma;
+	    font-size: 14px;
+	    line-height: 19.6px;
+	    height: 100%;
+	    margin:0;
+}
+a {
+	color: #686868;
+	text-decoration: none;
+	cursor: pointer;	
+	background: 0 0;
+}
+
+.mod-wifi-follow {
+	width: 100%;
+	background-color: #fff;
+	position: relative;
+}
+.mode-img-parent{
+	position: absolute;
+	width:100%;
+	top:0px;
+	z-index:1;
+}
+.mode-img-sub{
+	background-color:#FFF;
+	filter: alpha(opacity=50); opacity: 0.5;
+	position: absolute;
+	text-align: center;
+	width: 100%;
+}
+.mode-img-sub img{
+	width:50px;
+	height:50px;
+	vertical-align:middle;
+}
+.mod-wifi-follow__content {
+	position: absolute;
+	text-align: center;
+	width: 100%;
+	bottom:50px;
+}
+.mod-wifi-follow__btn {
+	display: inline-block ! important;
+	padding: 0 40px;
+	height: 35px;
+	line-height: 35px;
+	background-color: #24c400;
+	border: 1px solid #24c400;
+	color: #fff;
+	-webkit-border-radius: 5px;
+	-moz-border-radius: 5px;
+	border-radius: 5px;
+	-webkit-background-clip: padding-box;
+	-moz-background-clip: padding-box;
+	background-clip: padding-box;
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
