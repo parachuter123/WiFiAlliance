@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+  <head>
+    <title>shareone.html</title>
+	
+    <meta name="keywords" content="keyword1,keyword2,keyword3">
+    <meta name="description" content="this is my page">
+    <meta name="content-type" content="text/html; charset=UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    
+    <!--<link rel="stylesheet" type="text/css" href="./styles.css">-->
+	<!-- 新 Bootstrap 核心 CSS 文件 -->
+	<link rel="stylesheet" href="http://cdn.bootcss.com/bootstrap/3.3.0/css/bootstrap.min.css">
+	
+	<!-- jQuery文件。务必在bootstrap.min.js 之前引入 -->
+	<script src="http://cdn.bootcss.com/jquery/1.11.1/jquery.min.js"></script>
+	
+	<!-- 最新的 Bootstrap 核心 JavaScript 文件 -->
+	<script src="http://cdn.bootcss.com/bootstrap/3.3.0/js/bootstrap.min.js"></script>
+	<style>
+		body{background:#F1F1F1;}
+		.panel{
+			margin-left:10px;
+			margin-right:10px;
+		}
+		.btn-primary {
+			color: #fff;
+			background-color: #7564CE;
+			border-color: #7564CE;
+		}
+		
+	</style>
+  </head>
+  <body role="document">
+	
+    <div id="myCarousel" class="carousel slide">
+       <!-- 轮播（Carousel）指标 -->
+       <ol class="carousel-indicators">
+          <li data-target="#myCarousel" data-slide-to="0" class="active"></li>
+          <li data-target="#myCarousel" data-slide-to="1"></li>
+          <li data-target="#myCarousel" data-slide-to="2"></li>
+       </ol>   
+       <!-- 轮播（Carousel）项目 -->
+       <div class="carousel-inner">
+          <div class="item active">
+             <img src="imgs/img1.png" alt="First slide">
+          </div>
+          <div class="item">
+             <img src="imgs/img1.png" alt="Second slide">
+          </div>
+          <div class="item">
+             <img src="imgs/img1.png" alt="Third slide">
+          </div>
+       </div>
+       <!-- 轮播（Carousel）导航 -->
+       <a class="carousel-control left" href="#myCarousel" 
+          data-slide="prev">&lsaquo;</a>
+       <a class="carousel-control right" href="#myCarousel" 
+          data-slide="next">&rsaquo;</a>
+    </div> 
+    <div class="container-fluid">
+    	<div class="row">
+        	<div class="col-xs-3">
+            	<img src="imgs/img2.png" style="margin-top:20px;margin-left:20px;width:67%;">                
+            </div>
+            <div class="col-xs-1">
+            	<img src="imgs/img3.png" style="margin-top:15px;height:2%;width:1.9%;">
+            </div>
+        	<div class="col-xs-6">
+            	<span>已有1358人使用该WiFi</span>
+                <span>本店从明日起米饭免费送，并且消费满100元，9折优惠</span>
+            </div>
+        </div>
+    </div>
+    
+	<div class="container-fluid">
+		<div class="row">
+		  <div class="col-xs-12">
+			<center>
+				<button type="button" class="btn btn-lg btn-primary" onclick="showDialog()">
+					&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;分&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;享&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+				</button>
+			</center>
+		  </div>
+		</div>
+		<div class="row">
+		  <div class="col-xs-12">
+			<center>
+				<input type="checkbox" checked="true"/>我同意分享此次活动
+			</center>
+		  </div>
+		</div>
+	</div>
+	
+	<!-- 新建路由信息Start -->
+	<div class="modal fade" id="shareDialog">
+		<div class="modal-dialog">
+			<div class="modal-content">
+				<div class="modal-header">
+					<button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+					<h4 class="modal-title" id="ChangeModalLabel">获取验证码</h4>
+				</div>
+				<div class="modal-body">
+					<form role="form" id="CreateForm">
+						<div class="form-group">
+                            <div class="input-group">
+                              <input class="form-control" type="tel" placeholder="手机号">
+                              <div class="input-group-addon">获取验证码</div>
+                            </div>
+                        </div>
+						<div class="form-group">
+							<label for="CRouterCont">验证码</label>
+							<input type="text" class="form-control" id="CRouterCont">
+						</div>
+					</form>
+				</div>
+				<div class="modal-footer">
+					<button type="button" class="btn btn-default" data-dismiss="modal">取消</button>
+					<button type="button" class="btn btn-primary" id="ModelBtn" onclick="" data-dismiss="modal">确认</button>
+				</div>
+			</div>
+			<!-- /.modal-content -->
+		</div>
+		<!-- /.modal-dialog -->
+	</div>
+	<!-- /.modal -->
+	<!-- 新建路由信息End -->
+	
+	<footer style="line-height:40px;position:absolute;width:100%;bottom:0px;">
+		<div style="text-align:center;background-color:gray;">圣玛尼亚软件提供技术支持</div>
+	</footer>
+  </body>
+</html>

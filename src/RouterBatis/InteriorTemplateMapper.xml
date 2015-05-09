@@ -1,0 +1,87 @@
+<?xml version="1.0" encoding="UTF-8" ?>  
+<!DOCTYPE mapper PUBLIC   "-//mybatis.org//DTD Mapper 3.0//EN"  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="RouterBatis.InteriorTemplateMapper">
+		<!-- 复用sql语句  查询Wifi_AdTemplate表所有字段 -->
+		<sql id="SelectTemplateColumn">
+				SELECT	TemplateID,
+								TemplatePage,
+								ContentSample,
+								TemplateName,
+								Owner,
+								Type
+				FROM Wifi_Template
+		</sql>
+		<!-- Template 对象与数据库的对应关系
+			Type:取值广告类型的Type			
+		-->
+		<resultMap id="TemplateResultMap" type="HashMap">
+				<!--constructor>
+						<idArg javaType="String" column="STUDENT_ID"/>
+						<arg javaType="String" column="STUDENT_NAME"/>
+						<arg javaType="String" column="STUDENT_SEX"/>
+						<arg javaType="Date" column="STUDENT_BIRTHDAY"/> 
+				</constructor-->
+				<id      property="TemplateID"     column="TemplateID"     javaType="int"     jdbcType="INTEGER"/>
+				<result  property="TemplatePage"   column="TemplatePage"   javaType="String"  jdbcType="VARCHAR"/>
+				<result  property="ContentSample"  column="ContentSample"  javaType="String"  jdbcType="VARCHAR"/>
+				<result  property="TemplateName"   column="TemplateName"   javaType="String"  jdbcType="VARCHAR"/>
+				<result  property="Owner"          column="Owner"          javaType="String"  jdbcType="VARCHAR"/>
+				<result  property="Type"          column="Type"          javaType="int"  jdbcType="INTEGER"/>
+		</resultMap>
+		<!-- 插入代理 自动主键-->
+		<insert id="insertTemplate" parameterType="HashMap">
+				INSERT INTO Wifi_AdTemplate(TemplateID,
+										TemplatePage,
+										ContentSample,
+										TemplateName,
+										Owner)
+				     VALUES(#{TemplateID,jdbcType=INTEGER},
+			              #{TemplatePage,jdbcType=VARCHAR},
+			              #{ContentSample,jdbcType=VARCHAR},
+			              #{TemplateName,jdbcType=VARCHAR}),
+			              #{Owner,jdbcType=VARCHAR})
+				<selectKey keyProperty="TemplateID" resultType="int" order="AFTER">
+						select @@IDENTITY as value
+				</selectKey>
+		</insert>
+		<!-- 更新代理信息 -->
+		<update id="updateTemplate" parameterType="HashMap">
+				UPDATE Wifi_AdTemplate
+				    SET TemplatePage = #{TemplatePage},
+				        PassWord = #{PassWord},
+				        ContentSample = #{ContentSample},
+				        TemplateName = #{TemplateName},
+				        Owner = #{Owner,jdbcType=VARCHAR}
+				WHERE TemplateID = #{TemplateID}
+		</update>
+		<!-- 删除代理 -->
+		<delete id="deleteTemplateID" parameterType="int">
+				DELETE FROM Wifi_AdTemplate WHERE TemplateID = #{TemplateID}
+		</delete>
+		
+		<!--以代理ID取代理对象-->
+		<select id="SelectTemplateID" parameterType="int" resultMap="TemplateResultMap">
+				<include refid="SelectTemplateColumn"/>
+				where TemplateID=#{TemplateID,jdbcType=INTEGER}
+		</select>
+		<!--以代理ID取代理对象-->
+		<select id="SelectOwner" parameterType="String" resultMap="TemplateResultMap">
+				<include refid="SelectTemplateColumn"/>
+				where Owner=#{Owner,jdbcType=VARCHAR}
+		</select>
+		<!--以代理ID取代理对象-->
+		<select id="SelectOwnerAll" parameterType="String" resultMap="TemplateResultMap">
+				<include refid="SelectTemplateColumn"/>
+				where Owner is null or Owner='' or Owner=#{AgentID,jdbcType=VARCHAR}
+		</select>
+<!-- *******************************以下代码是web界面功能配置文件，作者：parachuter2015-4-24******************************************* -->
+		<!--获取全部模板对象-->
+		<select id="SelectAllTemplate"  resultMap="TemplateResultMap">
+				<include refid="SelectTemplateColumn"/>
+		</select>
+		<!--以代理ID和类型取代理对象-->
+		<select id="SelectOwnerAllAndType" parameterType="HashMap" resultMap="TemplateResultMap">
+				<include refid="SelectTemplateColumn"/>
+				where (Owner is null or Owner='' or Owner=#{Owner,jdbcType=VARCHAR}) and Type=#{Type,jdbcType=INTEGER}
+		</select>
+</mapper>  

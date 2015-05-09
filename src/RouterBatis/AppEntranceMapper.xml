@@ -1,0 +1,198 @@
+<?xml version="1.0" encoding="UTF-8" ?>  
+<!DOCTYPE mapper PUBLIC   "-//mybatis.org//DTD Mapper 3.0//EN"  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="RouterBatis.AppEntranceMapper">
+		<!-- 复用sql语句  查询Wifi_WifiModel表所有字段 -->
+		<sql id="SelectEntranceColumn">
+				SELECT	AppEntranceID,
+								Email,
+								LoginPassword,
+								State,
+								AppType,
+								LastTokenTime,
+								BusinessShopID,
+								DefaultGroupID,
+								AppHomePageUrl,
+								WatchHandleJs,
+								ExpiredHandleJs,
+								AppURL,
+								AppToken,
+								AppID,
+								AppSecret,
+								AppName,
+								FansQuantity,
+								OriginNumber,
+								SearchAccount,
+								Authenticate,
+								Introduction
+				FROM Wifi_AppEntrance
+		</sql>
+		<!-- Entrance 对象与数据库的对应关系-->
+		<resultMap id="EntranceResultMap" type="HashMap">
+				<!--constructor>
+						<idArg javaType="String" column="STUDENT_ID"/>
+						<arg javaType="String" column="STUDENT_NAME"/>
+				</constructor-->
+				<id      property="AppEntranceID"  column="AppEntranceID"  javaType="String"  jdbcType="VARCHAR"/>
+				<!-- 接口登陆参数 -->
+				<result  property="Email"          column="Email"          javaType="String"  jdbcType="VARCHAR"/>
+				<result  property="LoginPassword"  column="LoginPassword"  javaType="String"  jdbcType="VARCHAR"/>
+				
+				<!-- 接口关联参数 -->
+				<result  property="State"           column="State"           javaType="String"  jdbcType="VARCHAR"/>
+				<result  property="AppType"         column="AppType"         javaType="int"     jdbcType="INTEGER"/>
+				<result  property="LastTokenTime"   column="LastTokenTime"   javaType="Date"    jdbcType="TIMESTAMP"/>
+				<result  property="BusinesShopID"   column="BusinessShopID"  javaType="String"  jdbcType="VARCHAR"/>
+				<result  property="DefaultGroupID"  column="DefaultGroupID"  javaType="String"  jdbcType="VARCHAR"/>
+				<result  property="AppHomePageUrl"  column="AppHomePageUrl"  javaType="String"  jdbcType="VARCHAR"/>
+				
+				<!-- 认证参数 -->
+				<result  property="WatchHandleJs"    column="WatchHandleJs"    javaType="String"  jdbcType="VARCHAR"/>
+				<result  property="ExpiredHandleJs"  column="ExpiredHandleJs"  javaType="String"  jdbcType="VARCHAR"/>
+				
+				<!-- 转发参数 -->
+				<result  property="AppURL"    column="AppURL"    javaType="String"  jdbcType="VARCHAR"/>
+				<result  property="AppToken"  column="AppToken"  javaType="String"  jdbcType="VARCHAR"/>
+				
+				<!-- 接口同步参数 -->
+				<result  property="AppID"           column="AppID"          javaType="String"  jdbcType="VARCHAR"/>
+				<result  property="AppSecret"       column="AppSecret"      javaType="String"  jdbcType="VARCHAR"/>
+				<result  property="AppName"         column="AppName"        javaType="String"  jdbcType="VARCHAR"/>
+				<result  property="FansQuantity"    column="FansQuantity"   javaType="int"     jdbcType="INTEGER"/>
+				<result  property="OriginNumber"    column="OriginNumber"   javaType="String"  jdbcType="VARCHAR"/>
+				<result  property="SearchAccount"   column="SearchAccount"  javaType="String"  jdbcType="VARCHAR"/>
+				<result  property="Authenticate"    column="Authenticate"   javaType="String"  jdbcType="VARCHAR"/>
+				<result  property="Introduction"    column="Introduction"   javaType="String"  jdbcType="VARCHAR"/>
+				
+		</resultMap>
+		<!-- 插入-->
+		<insert id="insertEntrance" parameterType="HashMap">
+				INSERT INTO Wifi_AppEntrance(AppEntranceID,
+										Email,
+										LoginPassword,
+										State,
+										AppType,
+										LastTokenTime,
+										BusinessShopID,
+										DefaultGroupID,
+										AppHomePageUrl,
+										WatchHandleJs,
+										ExpiredHandleJs,
+										AppURL,
+										AppToken,
+										AppID,
+										AppSecret,
+										AppName,
+										FansQuantity,
+										OriginNumber,
+										SearchAccount,
+										Authenticate,
+										Introduction)
+				     VALUES(#{BusinesShopID,jdbcType=VARCHAR}+':'+#{AppID,jdbcType=VARCHAR}+'_'+LTRIM(STR(#{AppType,jdbcType=INTEGER})),
+										#{Email,jdbcType=VARCHAR},
+										#{LoginPassword,jdbcType=VARCHAR},
+										#{State,jdbcType=VARCHAR},
+										#{AppType,jdbcType=INTEGER},
+										#{LastTokenTime,jdbcType=TIMESTAMP},
+										#{BusinesShopID,jdbcType=VARCHAR},
+										#{DefaultGroupID,jdbcType=VARCHAR},
+										#{AppHomePageUrl,jdbcType=VARCHAR},
+										#{WatchHandleJs,jdbcType=VARCHAR},
+										#{ExpiredHandleJs,jdbcType=VARCHAR},
+										#{AppURL,jdbcType=VARCHAR},
+										#{AppToken,jdbcType=VARCHAR},
+										#{AppID,jdbcType=VARCHAR},
+										#{AppSecret,jdbcType=VARCHAR},
+										#{AppName,jdbcType=VARCHAR},
+										#{FansQuantity,jdbcType=INTEGER},
+										#{OriginNumber,jdbcType=VARCHAR},
+										#{SearchAccount,jdbcType=VARCHAR},
+										#{Authenticate,jdbcType=VARCHAR},
+										#{Introduction,jdbcType=VARCHAR})
+		</insert>
+		<!-- 更新-->
+		<update id="updateEntrance" parameterType="HashMap">
+				UPDATE Wifi_AppEntrance
+				    SET Email = #{Email,jdbcType=VARCHAR},
+								LoginPassword = #{LoginPassword,jdbcType=VARCHAR},
+								State = #{State,jdbcType=VARCHAR},
+								AppType = #{AppType,jdbcType=INTEGER},
+								LastTokenTime = #{LastTokenTime,jdbcType=TIMESTAMP},
+								BusinessShopID = #{BusinesShopID,jdbcType=VARCHAR},
+								DefaultGroupID = #{DefaultGroupID,jdbcType=VARCHAR},
+								AppHomePageUrl = #{AppHomePageUrl,jdbcType=VARCHAR},
+								WatchHandleJs = #{WatchHandleJs,jdbcType=VARCHAR},
+								ExpiredHandleJs = #{ExpiredHandleJs,jdbcType=VARCHAR},
+								AppURL = #{AppURL,jdbcType=VARCHAR},
+								AppToken = #{AppToken,jdbcType=VARCHAR},
+								AppID = #{AppID,jdbcType=VARCHAR},
+								AppSecret = #{AppSecret,jdbcType=VARCHAR},
+								AppName = #{AppName,jdbcType=VARCHAR},
+								FansQuantity = #{FansQuantity,jdbcType=INTEGER},
+								OriginNumber = #{OriginNumber,jdbcType=VARCHAR},
+								SearchAccount = #{SearchAccount,jdbcType=VARCHAR},
+								Authenticate = #{Authenticate,jdbcType=VARCHAR},
+								Introduction = #{Introduction,jdbcType=VARCHAR}
+				WHERE AppEntranceID = #{BusinesShopID,jdbcType=VARCHAR}+':'+#{AppID,jdbcType=VARCHAR}+'_'+LTRIM(STR(#{AppType,jdbcType=INTEGER}))
+		</update>
+		<!-- 删除-->
+		<delete id="deleteEntrance" parameterType="String">
+				DELETE FROM Wifi_AppEntrance WHERE AppEntranceID = #{AppEntranceID}
+		</delete>
+		
+		<!-- 以关注接口ID获取关注接口数据对象
+			* 
+			* 获取关注接口数据对象
+			* 
+			* @param AppEntranceID    关注接口ID
+			* @return EntranceResultMap
+		-->
+		<select id="SelectEntranceID" parameterType="String" resultMap="EntranceResultMap">
+				<include refid="SelectEntranceColumn"/>
+				where AppEntranceID=#{AppEntranceID}
+		</select>
+		
+		<!-- 以关注接口原始ID获取关注接口数据对象
+			* 
+			* 获取关注接口数据对象
+			* 
+			* @param OriginNumber    原始ID
+			* @return EntranceResultMap
+		-->
+		<select id="SelectOriginNumber" parameterType="String" resultMap="EntranceResultMap">
+				<include refid="SelectEntranceColumn"/>
+				where OriginNumber=#{OriginNumber}
+		</select>
+		
+		<!-- 以用户(关注者)ID取所属关注接口
+			* 
+			* 说明:注意保持各数据ID生成之间的关联
+			* 
+			* @param TerminalID 用户ID
+			* @return EntranceResultMap
+		-->
+		<select id="SelectEntranceTerminalID" parameterType="String" resultMap="EntranceResultMap">
+				<include refid="SelectEntranceColumn"/>
+				where #{TerminalID} like '>'+AppEntranceID+';'
+		</select>
+		
+		<select id="SelectBusinessShopID" parameterType="String" resultMap="EntranceResultMap">
+				<include refid="SelectEntranceColumn"/>
+				where BusinessShopID=#{BusinesShopID}
+		</select>
+		
+<!-- *******************************以下代码是web界面功能配置文件，作者：parachuter******************************************* -->
+		
+		<!-- 以原始ID,APP类型取所属关注接口
+			* 
+			* @param 
+			* @return EntranceResultMap
+		
+		<select id="SelectEntranceTerminalID" parameterType="HashMap" resultMap="EntranceResultMap">
+				<include refid="SelectEntranceColumn"/>
+				where OriginNumber = #{OriginNumber} AND AppType = #{AppType}
+		</select>-->
+
+
+
+		
+</mapper>

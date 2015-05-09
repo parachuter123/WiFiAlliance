@@ -1,0 +1,74 @@
+<?xml version="1.0" encoding="UTF-8" ?>  
+<!DOCTYPE mapper PUBLIC   "-//mybatis.org//DTD Mapper 3.0//EN"  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="RouterBatis.BrowserUserAgentMapper">
+		<!-- 复用sql语句  查询Wifi_WifiBrowserUserAgent表所有字段 -->
+		<sql id="SelectBrowserUserAgentColumn">
+				SELECT	UserAgent,
+								BrowserName,
+								TerminalBrand,
+								TerminalModel,
+								TerminalSystem,
+								TerminalType,
+								Fixed
+				FROM BrowserUserAgent
+		</sql>
+		<!-- BrowserUserAgent 对象与数据库的对应关系-->
+		<resultMap id="BrowserUserAgentResultMap" type="HashMap">
+				<!--constructor>
+						<idArg javaType="String" column="STUDENT_ID"/>
+						<arg javaType="String" column="STUDENT_NAME"/>
+				</constructor-->
+				<id      property="UserAgent"       column="UserAgent"       javaType="String"   jdbcType="VARCHAR"/>
+				<result  property="BrowserName"     column="BrowserName"     javaType="String"   jdbcType="VARCHAR"/>
+				<result  property="TerminalBrand"   column="TerminalBrand"   javaType="String"   jdbcType="VARCHAR"/>
+				<result  property="TerminalModel"   column="TerminalModel"   javaType="String"   jdbcType="VARCHAR"/>
+				<result  property="TerminalSystem"  column="TerminalSystem"  javaType="String"   jdbcType="VARCHAR"/>
+				<result  property="TerminalType"    column="TerminalType"    javaType="int"      jdbcType="INTEGER"/>
+				<result  property="Fixed"           column="Fixed"           javaType="Boolean"  jdbcType="BIT"/>
+		</resultMap>
+		<!-- 插入-->
+		<insert id="insertBrowserUserAgent" parameterType="HashMap">
+				INSERT INTO BrowserUserAgent(UserAgent,
+										BrowserName,
+										TerminalBrand,
+										TerminalModel,
+										TerminalSystem,
+										TerminalType,
+				            Fixed)
+				     VALUES(#{UserAgent},
+										#{BrowserName},
+										#{TerminalBrand},
+										#{TerminalModel},
+										#{TerminalSystem},
+										#{TerminalType},
+			              #{Fixed})
+		</insert>
+		<!-- 更新-->
+		<update id="updateBrowserUserAgent" parameterType="HashMap">
+				UPDATE FROM BrowserUserAgent
+				    SET BrowserName = #{BrowserName},
+				        TerminalBrand = #{TerminalBrand},
+				        TerminalModel = #{TerminalModel},
+				        TerminalSystem = #{TerminalSystem},
+				        TerminalType = #{TerminalType},
+				        Fixed = #{Fixed}
+				WHERE UserAgent = #{UserAgent};
+		</update>
+		<!-- 删除-->
+		<delete id="deleteBrowserUserAgent" parameterType="String">
+				DELETE FROM BrowserUserAgent WHERE UserAgent = #{UserAgent}
+		</delete>
+		
+		<!--以代理ID取代理对象-->
+		<select id="SelectUserAgentAll" resultMap="BrowserUserAgentResultMap">
+				<include refid="SelectBrowserUserAgentColumn"/>
+		</select>
+		<select id="SelectUserAgent" parameterType="String" resultMap="BrowserUserAgentResultMap">
+				<include refid="SelectBrowserUserAgentColumn"/>
+				where UserAgent=#{UserAgent}
+		</select>
+		<select id="SelectUserAgentFixed" parameterType="Boolean" resultMap="BrowserUserAgentResultMap">
+				<include refid="SelectBrowserUserAgentColumn"/>
+				where Fixed=#{Fixed}
+		</select>
+</mapper>

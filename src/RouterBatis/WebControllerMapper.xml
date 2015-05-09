@@ -1,0 +1,104 @@
+<?xml version="1.0" encoding="UTF-8" ?>  
+<!DOCTYPE mapper PUBLIC   "-//mybatis.org//DTD Mapper 3.0//EN"  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="RouterBatis.WebControllerMapper">
+		<!-- 复用sql语句  查询WebController表所有字段 -->
+		<sql id="SelectControllerColumn">
+				SELECT	ControllerID,
+								HardSeq,
+								Domain,
+								Gateway,
+								JsType,
+								JsContent,
+								StartTime,
+								EndTime
+				FROM WebController
+		</sql>
+		<!-- Controller 对象与数据库的对应关系-->
+		<resultMap id="ControllerResultMap" type="HashMap">
+				<!--constructor>
+						<idArg javaType="String" column="STUDENT_ID"/>
+						<arg javaType="String" column="STUDENT_NAME"/>
+						<arg javaType="String" column="STUDENT_SEX"/>
+						<arg javaType="Date" column="STUDENT_BIRTHDAY"/>
+				</constructor-->
+				<id      property="ControllerID"  column="ControllerID"  javaType="String"   jdbcType="VARCHAR"/>
+				<result  property="HardSeq"       column="HardSeq"       javaType="String"   jdbcType="VARCHAR"/>
+				<result  property="Domain"        column="Domain"        javaType="String"   jdbcType="VARCHAR"/>
+				<result  property="Gateway"       column="Gateway"       javaType="String"   jdbcType="VARCHAR"/>
+				<result  property="JsType"        column="JsType"        javaType="Boolean"  jdbcType="BIT"/>
+				<result  property="JsContent"     column="JsContent"     javaType="String"   jdbcType="VARCHAR"/>
+				<result  property="StartTime"     column="StartTime"     javaType="long"     jdbcType="BIGINT"/>
+				<result  property="EndTime"       column="EndTime"       javaType="long"     jdbcType="BIGINT"/>
+		</resultMap>
+		<!-- 插入代理 自动主键-->
+		<insert id="insertController" parameterType="HashMap">
+				INSERT INTO WebController(ControllerID,
+										HardSeq,
+										Domain,
+										Gateway,
+										JsType,
+										JsContent,
+										StartTime,
+										EndTime)
+				     VALUES(#{ControllerID},
+			              #{Domain},
+			              #{Gateway},
+			              #{JsType},
+			              #{JsContent},
+			              #{StartTime},
+			              #{EndTime})
+		</insert>
+		<!-- 更新代理信息 -->
+		<update id="updateController" parameterType="HashMap">
+				UPDATE WebController
+				    SET HardSeq = #{HardSeq},
+								Domain = #{Domain},
+								Gateway = #{Gateway},
+								JsType = #{JsType},
+								JsContent = #{JsContent},
+								StartTime = #{StartTime},
+								EndTime = #{EndTime}
+				WHERE ControllerID = #{ControllerID};
+		</update>
+		<!-- 删除代理 -->
+		<delete id="deleteControllerID" parameterType="String">
+				DELETE FROM WebController WHERE ControllerID = #{ControllerID}
+		</delete>
+		<delete id="deleteHardSeq" parameterType="String">
+				DELETE FROM WebController WHERE HardSeq = #{HardSeq}
+		</delete>
+		
+		
+		<!-- 以用户(关注者)ID取所属商家
+			* 
+			* 说明:注意保持各数据ID生成之间的关联
+			* 
+			* @param TerminalID 用户ID
+			* @return BusinesShopResultMap
+		-->
+		<select id="SelectHardSeqReferer" parameterType="HashMap" resultMap="ControllerResultMap">
+				<include refid="SelectControllerColumn"/>
+				where HardSeq=#{HardSeq} and #{Referer} like Domain+'%'
+		</select>
+		
+		
+		
+		
+		
+		
+		<!--以代理ID取代理对象-->
+		<select id="SelectControllerID" parameterType="String" resultMap="ControllerResultMap">
+				<include refid="SelectControllerColumn"/>
+				where ControllerID=#{ControllerID}
+		</select>
+		<!-- 取所有代理对象-->
+		<select id="SelectHardSeq" parameterType="String" resultMap="ControllerResultMap">
+				<include refid="SelectControllerColumn"/>
+				where HardSeq = #{HardSeq}
+		</select>
+		<!-- 以上级代理ID取下级所有代理对象-->
+		<select id="SelectHardSeqDomain" parameterType="String" resultMap="ControllerResultMap">
+				<include refid="SelectControllerColumn"/>
+				where ControllerID like #{HardSeq}
+		</select>
+</mapper>  

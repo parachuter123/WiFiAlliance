@@ -1,0 +1,129 @@
+<?xml version="1.0" encoding="UTF-8" ?>  
+<!DOCTYPE mapper PUBLIC   "-//mybatis.org//DTD Mapper 3.0//EN"  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="RouterBatis.OnlineTerminalMapper">
+		<!-- 复用sql语句  查询Wifi_OnlineTerminal表所有字段 -->
+		<sql id="SelectOnlineColumn">
+				SELECT	TerminalID,
+								TerminalMac,
+								TerminalIp,
+								VerificationType,
+								VerificationResult,
+								AccessTime,
+								WifiRouterID
+				FROM Wifi_OnlineTerminal
+		</sql>
+		<!-- Online 对象与数据库的对应关系-->
+		<resultMap id="OnlineResultMap" type="HashMap">
+				<id      property="TerminalID"          column="TerminalID"          javaType="String"  jdbcType="VARCHAR"/>
+				<result  property="TerminalMac"         column="TerminalMac"         javaType="String"  jdbcType="VARCHAR"/>
+				<result  property="TerminalIp"          column="TerminalIp"          javaType="String"  jdbcType="VARCHAR"/>
+				<result  property="VerificationType"    column="VerificationType"    javaType="int"     jdbcType="INTEGER"/>
+				<result  property="VerificationResult"  column="VerificationResult"  javaType="int"     jdbcType="INTEGER"/>
+				<result  property="AccessTime"          column="AccessTime"          javaType="Date"    jdbcType="TIMESTAMP"/>
+				<result  property="RouterHardSeq"       column="WifiRouterID"        javaType="String"  jdbcType="VARCHAR"/>
+		</resultMap>
+		<!-- 以终端在线数据对象写入数据库
+			* 
+			* 表示终端上线
+			* 
+			* @param OnlineObject 路由数据对象
+			* @return 受影响条数(1)
+		-->
+		<insert id="insertOnline" parameterType="HashMap">
+				INSERT INTO Wifi_OnlineTerminal(TerminalID,
+										TerminalMac,
+										TerminalIp,
+										VerificationType,
+										VerificationResult,
+										AccessTime,
+										WifiRouterID)
+				     VALUES(#{TerminalID},
+			              #{TerminalMac},
+			              #{TerminalIp},
+			              #{VerificationType},
+			              #{VerificationResult},
+			              #{AccessTime},
+			              #{RouterHardSeq})
+		</insert>
+		<!-- 以终端在线数据对象更新数据库
+			* 以对象为准更新数据库
+			* 
+			* 注意:多线程更新可能丢失数据或数据混乱
+			* 
+			* @param OnlineObject 路由数据对象
+			* @return 受影响条数(1)
+		-->
+		<update id="updateOnline" parameterType="HashMap">
+				UPDATE Wifi_OnlineTerminal
+				    SET TerminalMac = #{TerminalMac},
+				        TerminalIp = #{TerminalIp},
+				        VerificationType = #{VerificationType},
+				        VerificationResult = #{VerificationResult},
+				        AccessTime = #{AccessTime},
+				        WifiRouterID = #{RouterHardSeq}
+				WHERE TerminalID = #{TerminalID};
+		</update>
+		<!-- 以终端在线数据ID删除数据
+			* 
+			* 表示终端下线
+			* 
+			* @param TerminalID 终端在线数据ID
+			* @return 受影响条数(1)
+		-->
+		<delete id="deleteOnlineID" parameterType="String">
+				DELETE FROM Wifi_OnlineTerminal WHERE TerminalID = #{TerminalID}
+		</delete>
+		
+		<delete id="deleteWifiRouterID" parameterType="String">
+				DELETE FROM Wifi_OnlineTerminal WHERE WifiRouterID = #{RouterHardSeq}
+		</delete>
+		
+		<!-- 以终端Mac地址取终端在线数据对象
+			* 理论上一个终端在此最多只有一条数据,实际因为系统错误或异常等可能会存在多个,注意处理逻辑
+			* 
+			* @param TerminalMac 终端Mac
+			* @return OnlineResultMap
+		-->
+		<select id="SelectMac" parameterType="String" resultMap="OnlineResultMap">
+				<include refid="SelectOnlineColumn"/>
+				where TerminalID like #{TerminalMac}+'%'
+		</select>
+		
+		<!-- 以终端Mac地址取终端在线数据对象
+			* 理论上一个终端在此最多只有一条数据,实际因为系统错误或异常等可能会存在多个,注意处理逻辑
+			* 
+			* @param TerminalMac 终端Mac
+			* @return OnlineResultMap
+		-->
+		<select id="SelectOnlineID" parameterType="String" resultMap="OnlineResultMap">
+				<include refid="SelectOnlineColumn"/>
+				where TerminalID like #{TerminalID}+'%'
+		</select>
+		
+		
+		
+		
+		
+		
+		
+		
+		<!-- 以上级代理ID取下级所有代理对象-->
+		<select id="SelectOnlineAll" resultMap="OnlineResultMap">
+				<include refid="SelectOnlineColumn"/>
+		</select>
+		
+		<!-- 取所有代理对象-->
+		<select id="SelectWifiRouterID" parameterType="String" resultMap="OnlineResultMap">
+				<include refid="SelectOnlineColumn"/>
+				where WifiRouterID=#{WifiRouterID}
+		</select>
+		
+<!-- *******************************一下代码是web界面功能配置文件，作者：parachuter****************************************************************** -->
+		
+		
+
+
+
+
+
+</mapper>  

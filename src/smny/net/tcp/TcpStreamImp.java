@@ -1,0 +1,845 @@
+package smny.net.tcp;
+import java.io.DataInputStream;
+import java.io.DataOutputStream;
+import java.io.InputStream;
+import java.io.IOException;
+import java.io.EOFException;
+import java.io.ByteArrayInputStream;
+import java.io.OutputStream;
+import java.io.BufferedInputStream;
+import java.io.BufferedOutputStream;
+import java.io.ByteArrayOutputStream;
+
+
+
+public class TcpStreamImp implements TcpStream{
+	
+	private DataInputStream Reade;
+	private DataOutputStream Write;
+	public TcpStreamImp(){
+		
+	}
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	public void setInputStream(InputStream ConfigInp){
+		//this.Reade = new DataInputStream(new BufferedInputStream(ConfigInp));
+		this.Reade = new DataInputStream(ConfigInp);
+	}
+	public void setOutputStream(OutputStream ConfigOut){
+		//this.Write = new DataOutputStream(new BufferedOutputStream(ConfigOut));
+		this.Write = new DataOutputStream(ConfigOut);
+	}
+	
+	private String ExceptionRoute(Element element,String ExceptionInformation){
+			ExceptionInformation = String.valueOf(ExceptionInformation);
+			StringBuilder ExcepString = new StringBuilder(ExceptionInformation.length()+50);
+			ExcepString.append("[");
+			ExcepString.append(element.getName());
+			ExcepString.append("(");
+			ExcepString.append(element.getDataType());
+			if(element.getDataType() == DataType.PacketBodyType){
+				ExcepString.append("/");
+				ExcepString.append(((BodyElement)element).getPacketBodyName());
+			}
+			ExcepString.append(")]:");
+			ExcepString.append(ExceptionInformation);
+			return ExcepString.toString();
+	}
+	private int CalculationElementLength(Element element,TcpDataPacket achieve){
+			int ElementLength = 0;
+			if(element.isDirect()){
+					ElementLength = element.getLength();
+			}else{
+					if(achieve == null){
+						throw new NullPointerException(ExceptionRoute(element,"长度变量所在TcpDataPacket为空！"));
+					}
+					String LengthNmae = element.getLengthNmae();
+					Object BodyElementObject = achieve.get(LengthNmae);
+					if(BodyElementObject == null){
+						ElementLength = element.getLength();
+					}else if(BodyElementObject instanceof Number){
+						ElementLength = ((Number)BodyElementObject).intValue();
+					}else{
+						throw new NumberFormatException(ExceptionRoute(element,"长度变量{"+LengthNmae+"}数据类型要求为“Number”,数据实现类型为“"+BodyElementObject.getClass().getName()+"”"));
+					}
+			}
+			if(ElementLength < 0){
+					ElementLength = 0;
+			}
+			return ElementLength;
+	}
+	/*
+	*		约定
+	*		变量名称:getName()							//
+	*		变量类型:getDataType()					//
+	*		数量类型:isDirect()							//是否直接数量,默认为真
+	*		数量名称:getLengthNmae()				//数据个数,默认1，无符号整数
+	*		默认值:getDefaultValue()				//变量默认值
+	*		数量:getLength()								//数据个数,默认1，无符号整数
+	*		长度:getByteNumber()						//字节数,默认0，无符号整数
+	*		容量:getSize()									//容器容量,默认0，无符号整数
+	*/
+	private int CalculationValueLength(Element element,TcpDataPacket achieve){
+	    switch(element.getDataType()){
+	    	case ByteType:
+	    	case ShortType:
+	    	case IntType:
+	    	case LongType:
+	    	case UnsignedByteType:
+	    	case UnsignedShortType:
+	    	case UnsignedIntType:
+	    		return CalculationElementLength(element,achieve)*element.getByteNumber();
+	    	case UnionType:
+	    		return CalculationValueLength((PacketUnion)element,achieve);
+	    	case PacketBodyType:
+	    		return CalculationValueLength((BodyElement)element,achieve);
+	    	default:
+	    		
+	    		return 0;
+	    }
+	}
+	private int CalculationValueLength(BodyElement element,TcpDataPacket achieve){
+			int len = 0;
+			Object BodyData;
+			int BodyLength = CalculationElementLength(element,achieve);
+			if(achieve != null){
+					BodyData = achieve.get(element.getName());
+			}else{
+					BodyData = null;
+			}
+			PacketBody packetBody = element.getPacketBody();
+			if(BodyLength > 1){
+					TcpDataPacket[] BodyList;
+					if(BodyData == null){
+							BodyList = null;
+							
+							System.out.println(element.getName()+""+element.getPacketBodyName());
+							
+					}else if(!BodyData.getClass().isArray() || !TcpDataPacket.class.isAssignableFrom(BodyData.getClass().getComponentType())){
+							throw new NumberFormatException(ExceptionRoute(element,"数据类型要求为“TcpDataPacket[]”,数据实现类型为“"+BodyData.getClass().getName()+"”"));
+					}else{
+							BodyList = (TcpDataPacket[])BodyData;
+					}
+					try{
+							for(int i=0;i<BodyLength;i++){
+									if(BodyList!=null && i<BodyList.length){
+											len += CalculationSetElementLength(packetBody,BodyList[i]);
+									}else{
+											System.out.println(element.getName()+element.getPacketBodyName());
+											len += CalculationSetElementLength(packetBody,null);
+									}
+							}
+					}catch(NumberFormatException e){
+							throw new NumberFormatException(ExceptionRoute(element,e.toString()));
+					}catch(NullPointerException e){
+							e.printStackTrace();
+							throw new NullPointerException(ExceptionRoute(element,e.toString()));
+					}catch(RuntimeException e){
+							throw e;
+					}
+			}else{
+					if(BodyData==null || BodyData instanceof TcpDataPacket){
+							try{
+									len += CalculationSetElementLength(packetBody,(TcpDataPacket)BodyData);
+							}catch(NumberFormatException e){
+									throw new NumberFormatException(ExceptionRoute(element,e.toString()));
+							}catch(NullPointerException e){
+									e.printStackTrace();
+									throw new NullPointerException(ExceptionRoute(element,e.toString()));
+							}catch(RuntimeException e){
+									throw e;
+							}
+					}else{
+							throw new NumberFormatException(ExceptionRoute(element,"数据类型要求为“TcpDataPacket”,数据实现类型为“"+BodyData.getClass().getName()+"”"));
+					}
+			}
+			return len;
+	}
+	private int CalculationValueLength(PacketUnion packetUnion,TcpDataPacket achieve){
+			int len = 0;
+			String ElementName = packetUnion.getUnionKeyElementName();
+			if(achieve == null){
+					throw new NullPointerException(ExceptionRoute(packetUnion,"条件变量所在TcpDataPacket为空！"));
+			}
+			Object Where = achieve.get(ElementName);
+			if(Where == null){
+					throw new NullPointerException(ExceptionRoute(packetUnion,"条件变量“"+ElementName+"”为空！"));
+			}
+			for(int i=0;i<packetUnion.getSize();i++){
+					UnionElement element = (UnionElement)packetUnion.getElement(i);
+					if(element.isHit(Where)){
+							len += CalculationValueLength(element,achieve);
+							break;
+					}
+			}
+			return len;
+		/*
+			//固定分配
+			return len>packetUnion.getByteNumber()?len:packetUnion.getByteNumber();
+		*/
+	}
+	private int CalculationSetElementLength(SetElement setElement,TcpDataPacket achieve){
+			int len = 0;
+			for(int i=0;i<setElement.getSize();i++){
+					Element element = setElement.getElement(i);
+					len += CalculationValueLength(element,achieve);
+			}
+			return len;
+	}
+	private void CalculationLength(TcpDataPacket Packet){
+			if(Packet == null){
+					throw new NullPointerException("TcpDataPacket不能为空！");
+			}
+			int len = 0;
+			PacketStructure packetStructure = Packet.getPacketStructure();
+			PacketHead packetHead = packetStructure.getPacketHead();
+			
+			String TypeElementName = packetHead.getBodyTypeElementName();
+			Object obj = Packet.get(TypeElementName);
+			if(obj == null){
+					throw new NullPointerException("TcpDataPacket包类型数据为空");
+			}
+			if(!(obj instanceof Number)){
+					throw new NullPointerException("TcpDataPacket包类型数据要求为“Number”,数据实现类型为“"+obj.getClass().getName()+"”");
+			}
+			
+			int bodyType = ((Number)obj).intValue();
+			PacketBodyType packetBodyType = packetHead.getPacketBodyType(bodyType);
+			if(packetBodyType == null){
+					throw new NullPointerException("TcpDataPacket包类型数据指示一个不存在的类型:"+bodyType);
+			}
+			
+			
+			PacketBody packetBody = packetStructure.getPacketBody(packetBodyType.getSendBodyName());
+			len += CalculationSetElementLength(packetHead,Packet);
+			len += CalculationSetElementLength(packetBody,Packet);
+			
+			
+			String LenElementName = packetHead.getPacketLenElementName();
+			
+			Packet.put(LenElementName,len);
+			
+	}
+	
+	
+	private void PopValue(DataInputStream Reade,Element element,TcpDataPacket achieve)throws IOException{
+			int ElementLength = CalculationElementLength(element,achieve);
+	    switch(element.getDataType()){
+	    	case ByteType:
+	    		if(ElementLength > 1){
+		    			byte[] ByteValue = new byte[ElementLength];
+		    			for(int i=0;i<ElementLength;i++){
+		    					ByteValue[i] = Reade.readByte();
+		    			}
+		    			achieve.put(element.getName(),ByteValue);
+		    			//System.out.println(element.getName()+"="+element.getDataType().toString()+"["+ElementLength+"]");
+	    		}else if(element.isDirect()){
+	    				if(ElementLength == 1){
+	    						achieve.put(element.getName(),Byte.valueOf(Reade.readByte()));
+	    				}else{
+	    						achieve.put(element.getName(),Byte.valueOf((byte)0));
+	    				}
+		    			//System.out.println(element.getName()+"="+achieve.get(element.getName()));
+	    		}else{
+	    				byte[] ByteValue = new byte[ElementLength];
+	    				if(ElementLength > 0){
+	    						ByteValue[0] = Reade.readByte();
+	    				}
+	    				achieve.put(element.getName(),ByteValue);
+		    			//System.out.println(element.getName()+"="+element.getDataType().toString()+"["+ElementLength+"]");
+	    		}
+	    		break;
+	    	case ShortType:
+	    		if(ElementLength > 1){
+		    			short[] ShortValue = new short[ElementLength];
+		    			for(int i=0;i<ElementLength;i++){
+		    					ShortValue[i] = Reade.readShort();
+		    			}
+		    			achieve.put(element.getName(),ShortValue);
+		    			//System.out.println(element.getName()+"="+element.getDataType().toString()+"["+ElementLength+"]");
+	    		}else if(element.isDirect()){
+	    				if(ElementLength == 1){
+	    						achieve.put(element.getName(),Short.valueOf(Reade.readShort()));
+	    				}else{
+	    						achieve.put(element.getName(),Short.valueOf((short)0));
+	    				}
+		    			//System.out.println(element.getName()+"="+achieve.get(element.getName()));
+	    		}else{
+	    				short[] ShortValue = new short[ElementLength];
+	    				if(ElementLength > 0){
+	    						ShortValue[0] = Reade.readShort();
+	    				}
+	    				achieve.put(element.getName(),ShortValue);
+		    			//System.out.println(element.getName()+"="+element.getDataType().toString()+"["+ElementLength+"]");
+	    		}
+	    		break;
+	    	case IntType:
+	    		if(ElementLength > 1){
+		    			int[] IntValue = new int[ElementLength];
+		    			for(int i=0;i<ElementLength;i++){
+		    					IntValue[i] = Reade.readInt();
+		    			}
+		    			achieve.put(element.getName(),IntValue);
+		    			//System.out.println(element.getName()+"="+element.getDataType().toString()+"["+ElementLength+"]");
+	    		}else if(element.isDirect()){
+	    				if(ElementLength == 1){
+	    						achieve.put(element.getName(),Integer.valueOf(Reade.readInt()));
+	    				}else{
+	    						achieve.put(element.getName(),Integer.valueOf(0));
+	    				}
+		    			//System.out.println(element.getName()+"="+achieve.get(element.getName()));
+	    		}else{
+	    				int[] IntValue = new int[ElementLength];
+	    				if(ElementLength > 0){
+	    						IntValue[0] = Reade.readInt();
+	    				}
+	    				achieve.put(element.getName(),IntValue);
+		    			//System.out.println(element.getName()+"="+element.getDataType().toString()+"["+ElementLength+"]");
+	    		}
+	    		break;
+	    	case LongType:
+	    		if(ElementLength > 1){
+		    			long[] LongValue = new long[ElementLength];
+		    			for(int i=0;i<ElementLength;i++){
+		    					LongValue[i] = Reade.readLong();
+		    			}
+		    			achieve.put(element.getName(),LongValue);
+		    			//System.out.println(element.getName()+"="+element.getDataType().toString()+"["+ElementLength+"]");
+	    		}else if(element.isDirect()){
+	    				if(ElementLength == 1){
+	    						achieve.put(element.getName(),Long.valueOf(Reade.readLong()));
+	    				}else{
+	    						achieve.put(element.getName(),Long.valueOf((long)0));
+	    				}
+		    			//System.out.println(element.getName()+"="+achieve.get(element.getName()));
+	    		}else{
+	    				long[] LongValue = new long[ElementLength];
+	    				if(ElementLength > 0){
+	    						LongValue[0] = Reade.readLong();
+	    				}
+	    				achieve.put(element.getName(),LongValue);
+		    			//System.out.println(element.getName()+"="+element.getDataType().toString()+"["+ElementLength+"]");
+	    		}
+	    		break;
+	    	case UnsignedByteType:
+	    		if(ElementLength > 1){
+		    			short[] UnsignedByteValue = new short[ElementLength];
+		    			for(int i=0;i<ElementLength;i++){
+		    					UnsignedByteValue[i] = (short)(Reade.readByte()&0xff);
+		    					//System.out.println(element.getName()+"["+i+"]="+UnsignedByteValue[i]);
+		    			}
+		    			achieve.put(element.getName(),UnsignedByteValue);
+		    			//System.out.println(element.getName()+"="+element.getDataType().toString()+"["+ElementLength+"]");
+	    		}else if(element.isDirect()){
+	    				if(ElementLength == 1){
+	    						achieve.put(element.getName(),Short.valueOf((short)(Reade.readByte()&0xff)));
+	    				}else{
+	    						achieve.put(element.getName(),Short.valueOf((short)0));
+	    				}
+		    			//System.out.println(element.getName()+"="+achieve.get(element.getName()));
+	    		}else{
+	    				short[] UnsignedByteValue = new short[ElementLength];
+	    				if(ElementLength > 0){
+	    						UnsignedByteValue[0] = (short)(Reade.readByte()&0xff);
+	    				}
+	    				achieve.put(element.getName(),UnsignedByteValue);
+		    			//System.out.println(element.getName()+"="+element.getDataType().toString()+"["+ElementLength+"]");
+	    		}
+	    		break;
+	    	case UnsignedShortType:
+		    		if(ElementLength > 1){
+		    			int[] UnsignedShortValue = new int[ElementLength];
+		    			for(int i=0;i<ElementLength;i++){
+		    					UnsignedShortValue[i] = Reade.readShort()&0xFFFF;
+		    			}
+		    			achieve.put(element.getName(),UnsignedShortValue);
+		    			//System.out.println(element.getName()+"="+element.getDataType().toString()+"["+ElementLength+"]");
+	    		}else if(element.isDirect()){
+	    				if(ElementLength == 1){
+	    						achieve.put(element.getName(),Integer.valueOf(Reade.readShort()&0xFFFF));
+	    				}else{
+	    						achieve.put(element.getName(),Integer.valueOf((int)0));
+	    				}
+		    			//System.out.println(element.getName()+"="+achieve.get(element.getName()));
+	    		}else{
+	    				int[] UnsignedShortValue = new int[ElementLength];
+	    				if(ElementLength > 0){
+	    						UnsignedShortValue[0] = (Reade.readByte()&0xff);
+	    				}
+	    				achieve.put(element.getName(),UnsignedShortValue);
+		    			//System.out.println(element.getName()+"="+element.getDataType().toString()+"["+ElementLength+"]");
+	    		}
+	    		break;
+	    	case UnsignedIntType:
+	    		if(ElementLength > 1){
+		    			long[] UnsignedIntValue = new long[ElementLength];
+		    			for(int i=0;i<ElementLength;i++){
+		    					UnsignedIntValue[i] = Reade.readInt()&0xFFFFFFFFL;
+		    					//System.out.println(element.getName()+"["+i+"]="+UnsignedIntValue[i]);
+		    			}
+		    			achieve.put(element.getName(),UnsignedIntValue);
+		    			//System.out.println(element.getName()+"="+element.getDataType().toString()+"["+ElementLength+"]");
+	    		}else if(element.isDirect()){
+	    				if(ElementLength == 1){
+	    						achieve.put(element.getName(),Long.valueOf((long)(Reade.readInt()&0xFFFFFFFFL)));
+	    				}else{
+	    						achieve.put(element.getName(),Long.valueOf((long)0));
+	    				}
+		    			//System.out.println(element.getName()+"="+achieve.get(element.getName()));
+	    		}else{
+	    				long[] UnsignedIntValue = new long[ElementLength];
+	    				if(ElementLength > 0){
+	    						UnsignedIntValue[0] = Reade.readInt()&0xFFFFFFFFL;
+	    				}
+	    				achieve.put(element.getName(),UnsignedIntValue);
+		    			//System.out.println(element.getName()+"="+element.getDataType().toString()+"["+ElementLength+"]");
+	    		}
+	    		break;
+	    	case UnionType:
+	    		PopValue(Reade,(PacketUnion)element,achieve);
+	    		break;
+	    	case PacketBodyType:
+	    		PopValue(Reade,(BodyElement)element,achieve);
+	    		break;
+	    	default:
+	    		
+	    		break;
+	    }
+	}
+	private void PopValue(DataInputStream Reade,BodyElement element,TcpDataPacket achieve)throws IOException{
+			int ElementLength = CalculationElementLength(element,achieve);
+			PacketBody packetBody = element.getPacketBody();
+			if(ElementLength > 1){
+					TcpDataPacket[] BodyList = new TcpDataPacket[ElementLength];
+					for(int i=0;i<ElementLength;i++){
+							BodyList[i] = (TcpDataPacket)achieve.clone();
+							BodyList[i].clear();
+							PopSetElement(Reade,packetBody,BodyList[i]);
+					}
+					achieve.put(element.getName(),BodyList);
+			}else{
+					TcpDataPacket BodyPacket = (TcpDataPacket)achieve.clone();
+					BodyPacket.clear();
+					PopSetElement(Reade,packetBody,BodyPacket);
+					achieve.put(element.getName(),BodyPacket);
+			}
+	}
+	private void PopValue(DataInputStream Reade,PacketUnion packetUnion,TcpDataPacket achieve)throws IOException{
+			String ElementName = packetUnion.getUnionKeyElementName();
+			Object Where = achieve.get(ElementName);
+			if(Where == null){
+					throw new NullPointerException(ExceptionRoute(packetUnion,"条件变量“"+ElementName+"”为空！"));
+			}
+			for(int i=0;i<packetUnion.getSize();i++){
+					UnionElement element = (UnionElement)packetUnion.getElement(i);
+					if(element.isHit(Where)){
+							PopValue(Reade,element,achieve);
+							break;
+					}
+			}
+		/*
+			//固定分配
+			ByteArrayInputStream ByteArrayInp = readByteArrayInputStream(readBytes(Reade,packetUnion.getByteNumber()));
+			DataInputStream DataOut = readDataInputStream(ByteArrayInp);
+			for(int i=0;i<packetUnion.getSize();i++){
+					UnionElement element = (UnionElement)packetUnion.getElement(i);
+					if(element.isHit(Where)){
+							PopValue(Inp,element,achieve);
+							break;
+					}
+			}
+		*/
+	}
+	
+	private void PopSetElement(DataInputStream Reade,SetElement setElement,TcpDataPacket achieve)throws IOException{
+			for(int i=0;i<setElement.getSize();i++){
+					Element element = setElement.getElement(i);
+					try{
+							PopValue(Reade,element,achieve);
+					}catch (IOException e) {
+							if(i != 0){
+									System.out.println("读“"+element.getName()+"”错误:"+e.getMessage()+";"+e.getClass().getName());
+							}
+							throw e;
+					}
+					
+			}
+	}
+	
+	
+	
+	public void ParsingTcpDataPacket(TcpDataPacket Packet)throws EOFException,IOException{
+			if(Packet == null){
+					throw new NullPointerException("TcpDataPacket不能为空！");
+			}
+			
+			Packet.clear();
+			PacketStructure packetStructure = Packet.getPacketStructure();
+			PacketHead packetHead = packetStructure.getPacketHead();
+			
+			//解析包头
+			PopSetElement(Reade,packetHead,Packet);
+			
+			//确定包长度
+			String LenElementName = packetHead.getPacketLenElementName();
+			Object LenObj = Packet.get(LenElementName);
+			if(LenObj == null){
+					throw new NullPointerException("数据包长度数据为空");
+			}
+			if(!(LenObj instanceof Number)){
+					throw new NumberFormatException("数据包长度数据不是数字");
+			}
+			int PacketLen = ((Number)LenObj).intValue() - CalculationSetElementLength(packetHead,Packet);
+			if(PacketLen <= 0){
+					if(PacketLen == 0){
+							return;
+					}
+					throw new NumberFormatException("数据包长度数据错误");
+			}
+			
+			DataInputStream read = readDataInputStream(readByteArrayInputStream(readBytes(Reade,PacketLen)));
+			
+			//确定包类型
+			String TypeElementName = packetHead.getBodyTypeElementName();
+			Object Typeobj = Packet.get(TypeElementName);
+			if(Typeobj == null){
+					throw new NullPointerException("数据包长度数据为空");
+			}
+			if(!(Typeobj instanceof Number)){
+					throw new NumberFormatException("数据包长度数据不是数字");
+			}
+			int bodyType = ((Number)Typeobj).intValue();
+			PacketBodyType packetBodyType = packetHead.getPacketBodyType(bodyType);
+			PacketBody packetBody = packetStructure.getPacketBody(packetBodyType.getReceiveBodyName());
+			if(packetBody == null){
+					throw new NullPointerException("数据包结构体不存在");
+			}else{
+					//System.out.println("收到数据OrderType:"+packetBodyType.getName()+";BodyName:"+packetBody.getBodyName());
+			}
+			Packet.setPacketName(packetBody.getBodyName());
+			
+			
+			//解析包体
+			PopSetElement(read,packetBody,Packet);
+		
+	}
+	private void throwClassCastException(Element element,Object ObjectValue){
+		throw new ClassCastException(element.getName()+" 应该是 "+element.getDataType().toString()+"[],实际是:"+ObjectValue.getClass().getName());
+	}
+	
+	private void PushValue(DataOutputStream DataOut,Element element,TcpDataPacket achieve)throws IOException{
+			Object ObjectValue = null;
+			Number DefaultValue = element.getDefaultValue();
+			if(DefaultValue == null){
+  				DefaultValue = 0;
+  		}
+			int ElementLength = CalculationElementLength(element,achieve);
+			if(achieve != null){
+					ObjectValue = achieve.get(element.getName());
+			}
+			if(ObjectValue instanceof Number){
+					DefaultValue = (Number)ObjectValue;
+			}
+			
+			
+			
+	    switch(element.getDataType()){
+	    	case ByteType:
+	    		byte[] ByteValue = null;
+    			if(ObjectValue != null){
+    					if(ObjectValue instanceof byte[]){
+		    					ByteValue = (byte[])ObjectValue;
+		    					//System.out.println(element.getName()+"=="+new String(ByteValue));
+		    			}else if(ObjectValue instanceof String){
+		    					ByteValue = ObjectValue.toString().getBytes();
+		    					//System.out.println(element.getName()+"=="+ObjectValue);
+		    			}else if(!(ObjectValue instanceof Number)){
+		    					throwClassCastException(element,ObjectValue);
+		    			}
+    			}
+    			for(int i=0;i<ElementLength;i++){
+	    				if(ByteValue!=null && i<ByteValue.length){
+	    						DataOut.writeByte((int)ByteValue[i]);
+	    				}else{
+	    						DataOut.writeByte((int)DefaultValue.byteValue());
+	    				}
+    			}
+	    		break;
+	    	case ShortType:
+	    		short[] ShortValue = null;
+    			if(ObjectValue != null){
+    					if(ObjectValue instanceof short[]){
+		    					ShortValue = (short[])ObjectValue;
+		    			}else if(!(ObjectValue instanceof Number)){
+		    					//数据错误异常处理
+		    					throwClassCastException(element,ObjectValue);
+		    			}
+    			}
+    			for(int i=0;i<ElementLength;i++){
+	    				if(ShortValue!=null && i<ShortValue.length){
+	    						DataOut.writeShort((int)ShortValue[i]);
+	    				}else{
+	    						DataOut.writeShort((int)DefaultValue.shortValue());
+	    				}
+    			}
+	    		break;
+	    	case IntType:
+	    		int[] IntValue = null;
+    			if(ObjectValue != null){
+    					if(ObjectValue instanceof int[]){
+		    					IntValue = (int[])ObjectValue;
+		    			}else if(!(ObjectValue instanceof Number)){
+		    					//数据错误异常处理
+		    					throwClassCastException(element,ObjectValue);
+		    			}
+    			}
+    			for(int i=0;i<ElementLength;i++){
+	    				if(IntValue!=null && i<IntValue.length){
+	    						DataOut.writeInt(IntValue[i]);
+	    				}else{
+	    						DataOut.writeInt(DefaultValue.intValue());
+	    				}
+    			}
+	    		break;
+	    	case LongType:
+	    		long[] LongValue = null;
+    			if(ObjectValue != null){
+    					if(ObjectValue instanceof long[]){
+		    					LongValue = (long[])ObjectValue;
+		    			}else if(!(ObjectValue instanceof Number)){
+		    					//数据错误异常处理
+		    					throwClassCastException(element,ObjectValue);
+		    			}
+    			}
+    			for(int i=0;i<ElementLength;i++){
+	    				if(LongValue!=null && i<LongValue.length){
+	    						DataOut.writeLong(LongValue[i]);
+	    				}else{
+	    						DataOut.writeLong(DefaultValue.longValue());
+	    				}
+    			}
+	    		break;
+	    	case UnsignedByteType:
+	    		short[] UnsignedByteValue = null;
+    			if(ObjectValue != null){
+    					if(ObjectValue instanceof short[]){
+		    					UnsignedByteValue = (short[])ObjectValue;
+		    			}else if(!(ObjectValue instanceof Number)){
+		    					//数据错误异常处理
+		    					throwClassCastException(element,ObjectValue);
+		    			}
+    			}
+    			for(int i=0;i<ElementLength;i++){
+	    				if(UnsignedByteValue!=null && i<UnsignedByteValue.length){
+	    						DataOut.writeByte((int)UnsignedByteValue[i]);
+	    				}else{
+	    						DataOut.writeByte((int)DefaultValue.shortValue());
+	    				}
+    			}
+	    		break;
+	    	case UnsignedShortType:
+	    		int[] UnsignedShortValue = null;
+    			if(ObjectValue != null){
+    					if(ObjectValue instanceof int[]){
+		    					UnsignedShortValue = (int[])ObjectValue;
+		    			}else if(!(ObjectValue instanceof Number)){
+		    					//数据错误异常处理
+		    					throwClassCastException(element,ObjectValue);
+		    			}
+    			}
+    			for(int i=0;i<ElementLength;i++){
+	    				if(UnsignedShortValue!=null && i<UnsignedShortValue.length){
+	    						DataOut.writeShort(UnsignedShortValue[i]);
+	    				}else{
+	    						DataOut.writeShort(DefaultValue.intValue());
+	    						//System.out.println(element.getName()+"=="+DefaultValue.intValue());
+	    				}
+    			}
+	    		break;
+	    	case UnsignedIntType:
+	    		long[] UnsignedIntValue = null;
+    			if(ObjectValue != null){
+    					if(ObjectValue instanceof long[]){
+		    					UnsignedIntValue = (long[])ObjectValue;
+		    			}else if(!(ObjectValue instanceof Number)){
+		    					//数据错误异常处理
+		    					throwClassCastException(element,ObjectValue);
+		    			}
+    			}
+    			for(int i=0;i<ElementLength;i++){
+	    				if(UnsignedIntValue!=null && i<UnsignedIntValue.length){
+	    						DataOut.writeInt((int)UnsignedIntValue[i]);
+	    				}else{
+	    						DataOut.writeInt((int)DefaultValue.longValue());
+	    				}
+    			}
+	    		break;
+	    	case UnionType:
+	    		PushValue(DataOut,(PacketUnion)element,achieve);
+	    		break;
+	    	case PacketBodyType:
+	    		PushValue(DataOut,(BodyElement)element,achieve);
+	    		break;
+	    	default:
+	    		
+	    		break;
+	    }
+	}
+	private void PushValue(DataOutputStream DataOut,BodyElement element,TcpDataPacket achieve)throws IOException{
+			Object BodyData;
+			PacketBody packetBody = element.getPacketBody();
+			int ElementLength = CalculationElementLength(element,achieve);
+			if(achieve != null){
+					BodyData = achieve.get(element.getName());
+			}else{
+					BodyData = null;
+			}
+			if(ElementLength > 1){
+					TcpDataPacket[] BodyList;
+					if(BodyData == null){
+							BodyList = null;
+					}else if(!BodyData.getClass().isArray() || !TcpDataPacket.class.isAssignableFrom(BodyData.getClass().getComponentType())){
+							throw new NumberFormatException(ExceptionRoute(element,"数据类型要求为“TcpDataPacket[]”,数据实现类型为“"+BodyData.getClass().getName()+"”"));
+					}else{
+							BodyList = (TcpDataPacket[])BodyData;
+					}
+					try{
+							for(int i=0;i<ElementLength;i++){
+								if(BodyList!=null && i<BodyList.length){
+										PushSetElement(DataOut,packetBody,BodyList[i]);
+								}else{
+										PushSetElement(DataOut,packetBody,null);
+								}
+							}
+					}catch(NumberFormatException e){
+							throw new NumberFormatException(ExceptionRoute(element,e.toString()));
+					}catch(NullPointerException e){
+							throw new NullPointerException(ExceptionRoute(element,e.toString()));
+					}catch(RuntimeException e){
+							throw e;
+					}
+			}else{
+					if(BodyData==null || BodyData instanceof TcpDataPacket){
+							try{
+									PushSetElement(DataOut,packetBody,(TcpDataPacket)BodyData);
+							}catch(NumberFormatException e){
+									throw new NumberFormatException(ExceptionRoute(element,e.toString()));
+							}catch(NullPointerException e){
+									throw new NullPointerException(ExceptionRoute(element,e.toString()));
+							}catch(RuntimeException e){
+									throw e;
+							}
+					}else{
+							throw new NumberFormatException(ExceptionRoute(element,"数据类型要求为“TcpDataPacket”,数据实现类型为“"+BodyData.getClass().getName()+"”"));
+					}
+			}
+	}
+	private void PushValue(DataOutputStream Out,PacketUnion packetUnion,TcpDataPacket achieve)throws IOException{
+			String ElementName = packetUnion.getUnionKeyElementName();
+			Object Where = achieve.get(ElementName);
+			ByteArrayOutputStream ByteArrayOut = new ByteArrayOutputStream();
+			DataOutputStream DataOut = new DataOutputStream(ByteArrayOut);
+			for(int i=0;i<packetUnion.getSize();i++){
+					UnionElement element = (UnionElement)packetUnion.getElement(i);
+					if(element.isHit(Where)){
+							PushValue(DataOut,element,achieve);
+							break;
+					}
+			}
+			Out.write(ByteArrayOut.toByteArray());
+		/*
+			//固定分配
+			if(packetUnion.getByteNumber()>ByteArrayOut.size()){
+				Out.write(new byte[packetUnion.getByteNumber()-ByteArrayOut.size()]);
+			}
+		*/
+	}
+	private void PushSetElement(DataOutputStream DataOut,SetElement setElement,TcpDataPacket achieve)throws IOException{
+			for(int i=0;i<setElement.getSize();i++){
+					Element element = setElement.getElement(i);
+					PushValue(DataOut,element,achieve);
+			}
+	}
+	
+	
+	
+	public void Send(TcpDataPacket Packet)throws IOException{
+			//计算包大小
+			CalculationLength(Packet);
+			
+			PacketStructure packetStructure = Packet.getPacketStructure();
+			PacketHead packetHead = packetStructure.getPacketHead();
+			
+			String TypeElementName = packetHead.getBodyTypeElementName();
+			Object obj = Packet.get(TypeElementName);
+			if(obj == null){
+					throw new NullPointerException("数据包类型为空");
+			}
+			if(!(obj instanceof Number)){
+					throw new NumberFormatException("数据包类型不是数字");
+			}
+			
+			int bodyType = ((Number)obj).intValue();
+			PacketBodyType packetBodyType = packetHead.getPacketBodyType(bodyType);
+			if(packetBodyType == null){
+					throw new NullPointerException("数据包类型错误");
+			}
+			
+			PacketBody packetBody = packetStructure.getPacketBody(packetBodyType.getSendBodyName());
+			
+			if(packetBody == null){
+					throw new NullPointerException("数据包结构体不存在");
+			}else{
+					//System.out.println("发送数据OrderType:"+packetBodyType.getName()+";BodyName:"+packetBody.getBodyName());
+			}
+			
+			ByteArrayOutputStream ByteArrayOut = new ByteArrayOutputStream();
+			DataOutputStream DataOut = new DataOutputStream(ByteArrayOut);
+			
+			PushSetElement(DataOut,packetHead,Packet);
+			PushSetElement(DataOut,packetBody,Packet);
+			
+			Write.write(ByteArrayOut.toByteArray());
+			Write.flush();
+			ByteArrayOut.reset();
+			
+	}
+	public static DataInputStream readDataInputStream(ByteArrayInputStream ByteArray)throws IOException{
+			return new DataInputStream(ByteArray);
+	}
+	public static ByteArrayInputStream readByteArrayInputStream(byte[] data)throws IOException{
+			return new ByteArrayInputStream(data);
+	}
+	public static byte[] readBytes(InputStream is, int i)throws IOException{
+			int errorViews = 0;
+			byte[] data = new byte[i];
+			while(i>0){
+					try{
+							int bytes = is.read(data);
+							if(bytes == -1){
+								throw new EOFException("到达流末尾！");
+							}
+							i -= bytes;
+					} catch (IOException e) {
+							errorViews++;
+							if(errorViews > 3){
+									throw e;
+							}
+							try{
+									Thread.sleep(500);
+							}catch(Exception ex){
+								
+							}
+					}
+			}
+			return data;
+	}
+}

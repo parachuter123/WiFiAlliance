@@ -1,0 +1,2 @@
+﻿<%@ page contentType="text/json;charset=UTF-8" language="java"%>
+{"State":"${requestScope.Operat}","Message":"${requestScope.ErrorMessage}","ShowBug":"${requestScope.ShowBug}","SysErrorPointOut":"${requestScope.SysErrorPointOut}"}

@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="UTF-8" ?>     
+<!DOCTYPE configuration     
+    PUBLIC "-//mybatis.org//DTD Config 3.0//EN"     
+    "http://mybatis.org/dtd/mybatis-3-config.dtd">  
+<configuration>
+    <typeAliases>  
+        <!--给实体类起一个别名 user -->  
+    </typeAliases>
+    
+    <!--数据源配置  这块用 BD2数据库 -->  
+    <environments default="development">  
+        <environment id="development">  
+            <transactionManager type="JDBC" />  
+            <dataSource type="POOLED">
+                <property name="driver" value="com.microsoft.jdbc.sqlserver.SQLServerDriver" />  
+                <property name="url" value="jdbc:microsoft:sqlserver://localhost:1433;DatabaseName=WiFi;SelectMethod=cursor;" />  
+                <property name="username" value="sa" />  
+                <property name="password" value="brain2926666" />
+            </dataSource>  
+        </environment>  
+    </environments>  
+    <mappers>  
+        <!--userMapper.xml装载进来  同等于把“dao”的实现装载进来 -->
+        <mapper resource="RouterBatis/AgentMapper.xml" />
+        <mapper resource="RouterBatis/AppEntranceMapper.xml" />
+        <mapper resource="RouterBatis/AppRecordMapper.xml" />
+        <mapper resource="RouterBatis/AuthenRouterMapper.xml" />
+        <mapper resource="RouterBatis/BlackWhiteListMapper.xml" />
+        <mapper resource="RouterBatis/BrowserUserAgentMapper.xml" />
+        <mapper resource="RouterBatis/BusinesShopMapper.xml" />
+        <mapper resource="RouterBatis/DeviceTerminalMapper.xml" />
+        <mapper resource="RouterBatis/ShareTaskMapper.xml" />
+        <mapper resource="RouterBatis/FollowersGroupMapper.xml" />
+        <mapper resource="RouterBatis/FollowersMapper.xml" />
+        <mapper resource="RouterBatis/FollowerInfoMapper.xml" />
+        <mapper resource="RouterBatis/TerminalModelMapper.xml" />
+        <mapper resource="RouterBatis/IndustryMapper.xml" />
+        <mapper resource="RouterBatis/InteriorTemplateMapper.xml" />
+        <mapper resource="RouterBatis/InfoTemplateMapper.xml" />
+        <mapper resource="RouterBatis/OnlineTerminalMapper.xml" />
+        <mapper resource="RouterBatis/WifiRouterMapper.xml" />
+        <mapper resource="RouterBatis/WifiTerminalMapper.xml" />
+        <mapper resource="RouterBatis/WebControllerMapper.xml" />
+        <mapper resource="RouterBatis/ParamTemplateMapper.xml" />
+        <mapper resource="RouterBatis/TemplateParamMapper.xml" />
+    </mappers>
+</configuration>

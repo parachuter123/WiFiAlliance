@@ -1,0 +1,74 @@
+<?xml version="1.0" encoding="UTF-8" ?>  
+<!DOCTYPE mapper PUBLIC   "-//mybatis.org//DTD Mapper 3.0//EN"  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="RouterBatis.FollowerInfoMapper">
+		<!-- 复用sql语句  查询Wifi_FollowerInfo表所有字段 -->
+		<sql id="SelectInfoColumn">
+				SELECT	FollowersID,
+								Name,
+								IDNumber,
+								Address,
+								Phone,
+								Weixin,
+								QQ,
+								Remark
+				FROM Wifi_FollowerInfo
+		</sql>
+		<!-- Info 对象与数据库的对应关系-->
+		<resultMap id="InfoResultMap" type="HashMap">
+				<!--constructor>
+						<idArg javaType="String" column="STUDENT_ID"/>
+						<arg javaType="String" column="STUDENT_NAME"/>
+						<arg javaType="String" column="STUDENT_SEX"/>
+						<arg javaType="Date" column="STUDENT_BIRTHDAY"/>
+				</constructor-->
+				<id      property="FollowersID"  column="FollowersID"  javaType="String"  jdbcType="VARCHAR"/>
+				<result  property="Name"         column="Name"         javaType="String"  jdbcType="VARCHAR"/>
+				<result  property="IDNumber"     column="IDNumber"     javaType="String"  jdbcType="VARCHAR"/>
+				<result  property="Address"      column="Address"      javaType="String"  jdbcType="VARCHAR"/>
+				<result  property="Phone"        column="Phone"        javaType="String"  jdbcType="VARCHAR"/>
+				<result  property="Weixin"       column="Weixin"       javaType="String"  jdbcType="VARCHAR"/>
+				<result  property="QQ"           column="QQ"           javaType="String"  jdbcType="VARCHAR"/>
+				<result  property="Remark"       column="Remark"       javaType="String"  jdbcType="VARCHAR"/>
+		</resultMap>
+		<!-- 插入代理 自动主键-->
+		<insert id="insertInfo" parameterType="HashMap">
+				INSERT INTO Wifi_FollowerInfo(FollowersID,
+										Name,
+										IDNumber,
+										Address,
+										Phone,
+										Weixin,
+										QQ,
+										Remark)
+				     VALUES(#{FollowersID},
+			              #{Name},
+			              #{IDNumber},
+			              #{Address},
+			              #{Phone},
+			              #{Weixin},
+			              #{QQ},
+			              #{Remark})
+		</insert>
+		<!-- 更新代理信息 -->
+		<update id="updateInfo" parameterType="HashMap">
+				UPDATE Wifi_FollowerInfo
+				    SET Name = #{Name}
+								IDNumber = #{IDNumber}
+								Address = #{Address}
+								Phone = #{Phone}
+								Weixin = #{Weixin}
+								QQ = #{QQ}
+								Remark = #{Remark}
+				WHERE FollowersID = #{FollowersID};
+		</update>
+		<!-- 删除代理 -->
+		<delete id="deleteInfoID" parameterType="String">
+				DELETE Wifi_FollowerInfo WHERE FollowersID = #{FollowersID}
+		</delete>
+		
+		<!--以代理ID取代理对象-->
+		<select id="SelectInfoID" parameterType="String" resultMap="InfoResultMap">
+				<include refid="SelectInfoColumn"/>
+				where FollowersID=#{FollowersID}
+		</select>
+</mapper>  

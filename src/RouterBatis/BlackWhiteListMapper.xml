@@ -1,0 +1,184 @@
+<?xml version="1.0" encoding="UTF-8" ?>  
+<!DOCTYPE mapper PUBLIC   "-//mybatis.org//DTD Mapper 3.0//EN"  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="RouterBatis.BlackWhiteListMapper">
+		<!-- 复用sql语句  查询Wifi_WifiModel表所有字段 -->
+		<sql id="SelectBlackWhiteListColumn">
+				SELECT	BlackWhiteListID,
+								Mac,
+								ListType,
+								Remark,
+								BusinessShopID
+				FROM Wifi_BlackWhiteList
+		</sql>
+		<!-- BlackWhiteListResultMap 参数与数据库字段对应关系说明
+			* 
+			* 说明:
+			* 
+			* @param BlackWhiteListID   黑白名单ID		       {BusinesShopID + ':' + Mac}
+			* @param Mac                终端Mac地址
+			* @param ListType           名单类型		         {黑名单:0,白名单:1}
+			* @param Remark             说明
+			* @param BusinesShopID      所属商家
+			* @return HashMap
+		-->
+		<resultMap id="BlackWhiteListResultMap" type="HashMap">
+				<id      property="BlackWhiteListID"  column="BlackWhiteListID"  javaType="String"   jdbcType="VARCHAR"/>
+				<result  property="Mac"               column="Mac"               javaType="String"   jdbcType="VARCHAR"/>
+				<result  property="ListType"          column="ListType"          javaType="Boolean"  jdbcType="BIT"/>
+				<result  property="Remark"            column="Remark"            javaType="String"   jdbcType="VARCHAR"/>
+				<result  property="BusinesShopID"     column="BusinessShopID"    javaType="String"   jdbcType="VARCHAR"/>
+		</resultMap>
+		<!-- 插入-->
+		<insert id="insertBlackWhiteList" parameterType="HashMap">
+				INSERT INTO Wifi_BlackWhiteList(BlackWhiteListID,
+										Mac,
+										ListType,
+										Remark,
+										BusinessShopID)
+				     VALUES(#{Mac}+':'+#{BusinesShopID},
+										#{Mac},
+										#{ListType,jdbcType=BIT},
+										#{Remark,jdbcType=VARCHAR},
+										#{BusinesShopID})
+		</insert>
+		<!-- 插入会员手机号列表-->
+		<insert id="insertMemberTelList" parameterType="HashMap">
+				INSERT INTO Wifi_BlackWhiteList(BlackWhiteListID,
+										Mac,
+										ListType,
+										Remark,
+										BusinessShopID)
+					select #{Mac}+':'+#{BusinesShopID},#{Mac},#{ListType,jdbcType=BIT},#{Remark,jdbcType=VARCHAR},#{BusinesShopID}
+					where not exists(
+						select * from Wifi_BlackWhiteList b where b.BlackWhiteListID=#{Mac}+':'+#{BusinesShopID}
+					);
+		</insert>
+		<!-- 以黑白名单对象BlackWhiteListID同步数据库
+			* @param Map            黑白名单对象
+		-->
+		<update id="updateBlackWhiteList" parameterType="HashMap">
+				UPDATE Wifi_BlackWhiteList
+				    SET ListType = #{ListType,jdbcType=BIT},
+								Remark = #{Remark,jdbcType=VARCHAR}
+				WHERE BlackWhiteListID = #{BlackWhiteListID};
+		</update>
+		<!-- 以黑白名单对象BlackWhiteListID非空更新数据库
+			* @param Map            黑白名单对象
+		-->
+		<update id="updateNonEmpty" parameterType="HashMap">
+	  		UPDATE Wifi_BlackWhiteList
+			    <set>
+						<if test="ListType!=null">
+								ListType = #{ListType},
+						</if>
+						<if test="Remark!=null and Remark!='' ">
+								Remark = #{Remark},
+						</if>
+						<if test="BusinesShopID!=null and BusinesShopID!='' ">
+								BusinessShopID = #{BusinesShopID},
+								BlackWhiteListID = #{Mac}+':'+#{BusinesShopID}
+						</if>
+			    </set>
+				WHERE BlackWhiteListID = #{Mac}+':'+#{BusinesShopID}
+		</update>
+		<!-- 删除指定名单
+			* @param String            BlackWhiteListID
+		-->
+		<delete id="deleteBlackWhiteListID" parameterType="String">
+				DELETE FROM Wifi_BlackWhiteList WHERE BlackWhiteListID = #{BlackWhiteListID}
+		</delete>
+		<!-- 删除商家名单
+			* @param String            BusinesShopID
+		-->
+		<delete id="deleteShopID" parameterType="String">
+				DELETE FROM Wifi_BlackWhiteList WHERE BlackWhiteListID like '%:' + #{BusinesShopID}
+		</delete>
+		<!-- 删除终端名单
+			* @param String            Mac
+		-->
+		<delete id="deleteMac" parameterType="String">
+				DELETE FROM Wifi_BlackWhiteList WHERE BlackWhiteListID like #{Mac} +':"%'
+		</delete>
+		
+		<!-- 以商家ID和终端Mac地址获取:商家黑白名单数据对象
+			* 
+			* 获取商家的终端黑白名单对象
+			* 
+			* @param BusinesShopID  商家ID
+			* @param Mac            终端Mac
+			* @return BlackWhiteListResultMap
+		-->
+		<select id="SelectBusinesBlackWhiteList" parameterType="HashMap" resultMap="BlackWhiteListResultMap">
+				<include refid="SelectBlackWhiteListColumn"/>
+				where BlackWhiteListID = #{Mac}+':'+#{BusinesShopID}
+		</select>
+		
+		
+		<!-- 以BlackWhiteListID获取:指定黑白名单数据对象
+			* 
+			* 获取指定黑白名单对象
+			* 
+			* @param BlackWhiteListID  黑白名单ID
+			* @return BlackWhiteListResultMap
+		-->
+		<select id="SelectBlackWhiteListID" parameterType="String" resultMap="BlackWhiteListResultMap">
+				<include refid="SelectBlackWhiteListColumn"/>
+				where BlackWhiteListID=#{BlackWhiteListID}
+		</select>
+		
+		<!-- 以商家ID获取:黑白名单数据对象列表
+			* 
+			* 获取商家黑白名单对象列表
+			* 
+			* @param BusinesShopID  商家ID
+			* @return BlackWhiteListResultMap
+		-->
+		<select id="SelectShopID" parameterType="String" resultMap="BlackWhiteListResultMap">
+				<include refid="SelectBlackWhiteListColumn"/>
+				Where BlackWhiteListID like '%:' + #{BusinesShopID}
+		</select>
+<!-- *******************************以下代码是web界面功能配置文件，作者：Ronan****************************************************************** -->
+		<!-- 条件获取商家黑白名单数据对象
+			* 
+			* 获取商家的终端黑白名单对象
+			* 
+			* @param Map            map
+			* @return BlackWhiteListResultMap
+		-->
+		<select id="SelectBlackWhiteList" parameterType="HashMap" resultMap="BlackWhiteListResultMap">
+				<include refid="SelectBlackWhiteListColumn"/>
+				<where>
+					<if test="BusinesShopID!=null and BusinesShopID!=''">
+							BlackWhiteListID like '%:' + #{BusinesShopID}
+					</if>
+					<if test="ListType!=null">
+							AND [ListType] = #{listtype_int}
+					</if>
+					<if test="SearchKeyWords != null">
+							AND (Mac = '%'+#{SearchKeyWords}+'%' OR Remark like '%'+#{SearchKeyWords}+'%')
+					</if>
+				</where>
+		</select>
+		
+		<!-- 条件获取商家黑白名单数据对象数量
+			* 
+			* 获取商家的终端黑白名单对象数量
+			* 
+			* @param Map            map
+			* @return BlackWhiteListResultMap
+		-->
+		<select id="SelectBlackWhiteListCount" parameterType="HashMap" resultType="int">
+				select count(*) FROM Wifi_BlackWhiteList
+				<where>
+					<if test="BusinesShopID!=null and BusinesShopID!=''">
+							BlackWhiteListID like '%:' + #{BusinesShopID}
+					</if>
+					<if test="ListType!=null">
+							AND [ListType] = #{listtype_int}
+					</if>
+					<if test="SearchKeyWords != null">
+							AND (Mac = '%'+#{SearchKeyWords}+'%' OR Remark like '%'+#{SearchKeyWords}+'%')
+					</if>
+				</where>
+		</select>
+</mapper>

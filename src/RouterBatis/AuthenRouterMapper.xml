@@ -1,0 +1,70 @@
+<?xml version="1.0" encoding="UTF-8" ?>  
+<!DOCTYPE mapper PUBLIC   "-//mybatis.org//DTD Mapper 3.0//EN"  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="RouterBatis.AuthenRouterMapper">
+		<!-- 复用sql语句  查询Wifi_WifiTerminal表所有字段 -->
+		<sql id="SelectTerminalColumn">
+				SELECT	HardSeq,
+						AuthenID
+				FROM Wifi_AuthenRouter
+		</sql>
+		<!-- Terminal 对象与数据库的对应关系-->
+		<resultMap id="AuthenRouterResultMap" type="HashMap">
+				<id      property="HardSeq"   column="HardSeq"   javaType="String"  jdbcType="VARCHAR"/>
+				<result  property="AuthenID"  column="AuthenID"  javaType="int"     jdbcType="INTEGER"/>
+		</resultMap>
+		
+		
+		
+		
+		<!-- 路由接入
+			* 
+		-->
+		<insert id="RouterAccess" parameterType="HashMap">
+				INSERT INTO Wifi_AuthenRouter(HardSeq,
+										AuthenID)
+				     VALUES(#{HardSeq,jdbcType=VARCHAR},
+										#{AuthenID,jdbcType=INTEGER})
+		</insert>
+		
+		<!--路由启动
+			* 
+		-->
+		<update id="RouterStart" parameterType="HashMap">
+				UPDATE Wifi_AuthenRouter
+				    SET AuthenID = #{AuthenID,jdbcType=INTEGER}
+				WHERE HardSeq = #{HardSeq,jdbcType=VARCHAR}
+		</update>
+		<!-- 路由退出
+			* 
+		-->
+		<delete id="RouterQuit" parameterType="String">
+				DELETE FROM Wifi_AuthenRouter WHERE HardSeq = #{HardSeq,jdbcType=VARCHAR}
+		</delete>
+		
+		
+		<!-- 认证退出
+			* 
+			* 同时删除所有路由
+		-->
+		<delete id="AuthenQuit" parameterType="int">
+				DELETE FROM Wifi_AuthenRouter WHERE AuthenID = #{AuthenID,jdbcType=INTEGER}
+		</delete>
+		
+		<!-- 认证路由
+			* 
+		-->
+		<select id="SelectRorter" parameterType="String" resultMap="AuthenRouterResultMap">
+				SELECT *
+				FROM Wifi_AuthenRouter
+				where HardSeq = #{HardSeq,jdbcType=VARCHAR}
+		</select>
+		
+		<!-- 认证服务器下的路由数量
+			* 
+		-->
+		<select id="SelectAuthen" parameterType="int" resultType="int">
+				SELECT count(*)
+				FROM Wifi_AuthenRouter
+				where AuthenID = #{AuthenID,jdbcType=INTEGER}
+		</select>
+</mapper>  

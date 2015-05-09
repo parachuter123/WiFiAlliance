@@ -1,0 +1,139 @@
+<?xml version="1.0" encoding="UTF-8" ?>  
+<!DOCTYPE mapper PUBLIC   "-//mybatis.org//DTD Mapper 3.0//EN"  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="RouterBatis.FollowersGroupMapper">
+		<!-- 复用sql语句  查询Wifi_FollowersGroup表所有字段 -->
+		<sql id="SelectGroupColumn">
+				SELECT	GroupID,
+								GroupName,
+								Notice,
+								UplinkSpeed,
+								DownSpeed,
+								UplinkFlow,
+								DownFlow,
+								ReasonURL,
+								GroupOrder,
+								BusinessShopID
+				FROM Wifi_FollowersGroup
+		</sql>
+		<!-- Group 对象与数据库的对应关系-->
+		<resultMap id="GroupResultMap" type="HashMap">
+				<!--constructor>
+						<idArg javaType="String" column="STUDENT_ID"/>
+						<arg javaType="String" column="STUDENT_NAME"/>
+						<arg javaType="String" column="STUDENT_SEX"/>
+						<arg javaType="Date" column="STUDENT_BIRTHDAY"/>
+				</constructor-->
+				<id      property="GroupID"         column="GroupID"          javaType="String"  jdbcType="VARCHAR"/>
+				<result  property="GroupName"       column="GroupName"        javaType="String"  jdbcType="VARCHAR"/>
+				<result  property="Notice"          column="Notice"           javaType="Boolean" jdbcType="BIT"/>
+				<result  property="UplinkSpeed"     column="SuperiorGroupID"  javaType="int"     jdbcType="INTEGER"/>
+				<result  property="DownSpeed"       column="RouterGroupsID"   javaType="int"     jdbcType="INTEGER"/>
+				<result  property="UplinkFlow"      column="SuperiorGroupID"  javaType="int"     jdbcType="INTEGER"/>
+				<result  property="DownFlow"        column="RouterGroupsID"   javaType="int"     jdbcType="INTEGER"/>
+				<result  property="ReasonURL"       column="ReasonURL"        javaType="String"  jdbcType="VARCHAR"/>
+				<result  property="GroupOrder"      column="GroupOrder"       javaType="int"     jdbcType="INTEGER"/>
+				<result  property="BusinessShopID"  column="BusinessShopID"   javaType="String"  jdbcType="VARCHAR"/>
+		</resultMap>
+		<!-- 插入代理 自动主键-->
+		<insert id="insertGroup" parameterType="HashMap">
+				INSERT INTO Wifi_FollowersGroup(GroupID,
+										GroupName,
+										Notice,
+										UplinkSpeed,
+										DownSpeed,
+										UplinkFlow,
+										DownFlow,
+										ReasonURL,
+										GroupOrder,
+										BusinessShopID)
+				     VALUES(#{BusinessShopID,jdbcType=VARCHAR} + ':' + #{GroupName,jdbcType=VARCHAR},
+			              #{GroupName,jdbcType=VARCHAR},
+			              #{Notice,jdbcType=BIT},
+			              #{UplinkSpeed,jdbcType=INTEGER},
+			              #{DownSpeed,jdbcType=INTEGER},
+			              #{UplinkFlow,jdbcType=INTEGER},
+			              #{DownFlow,jdbcType=INTEGER},
+			              #{ReasonURL,jdbcType=VARCHAR},
+			              #{GroupOrder,jdbcType=INTEGER},
+			              #{BusinessShopID,jdbcType=VARCHAR})
+		</insert>
+		<!-- 更新代理信息 -->
+		<update id="updateGroup" parameterType="HashMap">
+				UPDATE Wifi_FollowersGroup
+				    SET GroupName = #{GroupName,jdbcType=VARCHAR},
+								Notice = #{Notice,jdbcType=BIT},
+								UplinkSpeed = #{UplinkSpeed,jdbcType=INTEGER},
+								DownSpeed = #{DownSpeed,jdbcType=INTEGER},
+								UplinkFlow = #{UplinkFlow,jdbcType=INTEGER},
+								DownFlow = #{DownFlow,jdbcType=INTEGER},
+								ReasonURL = #{ReasonURL,jdbcType=VARCHAR},
+								GroupOrder = #{GroupOrder,jdbcType=INTEGER},
+								BusinessShopID = #{BusinessShopID,jdbcType=VARCHAR}
+				WHERE GroupID = #{GroupID}
+		</update>
+		<!-- 以分组ID删除分组对象
+			* 
+			* 以分组ID删除分组对象
+			* 
+			* @param GroupID    分组ID
+			* @return GroupResultMap
+		-->
+		<delete id="deleteGroupID" parameterType="String">
+				DELETE Wifi_FollowersGroup WHERE GroupID = #{GroupID}
+		</delete>
+		<!-- 以商家ID删除分组对象
+			* 
+			* 以商家ID删除分组对象
+			* 
+			* @param GroupID    分组ID
+			* @return GroupResultMap
+		-->
+		<delete id="deleteShopID" parameterType="String">
+				DELETE Wifi_FollowersGroup WHERE GroupID like #{BusinessShopID}+':%'
+		</delete>
+		
+		<!-- 以关注者组ID获取关注者组数据对象
+			* 
+			* 获取关注者组数据对象
+			* 
+			* @param GroupID    关注接口ID
+			* @return GroupResultMap
+		-->
+		<select id="SelectGroupID" parameterType="String" resultMap="GroupResultMap">
+				<include refid="SelectGroupColumn"/>
+				where GroupID=#{GroupID}
+		</select>
+		
+		
+		
+		<!--以商店ID获取分组对象 
+			*
+			*
+			*@param BusinessShopID	商家ID
+			*@return GroupResultMap
+		-->
+		<select id="SelectShopID" parameterType="String" resultMap="GroupResultMap">
+				<include refid="SelectGroupColumn"/>
+				where GroupID like #{BusinessShopID}+':%'
+		</select>
+		<!-- 以上级代理ID取下级所有代理对象-->
+		<select id="SelectGroupAll" resultMap="GroupResultMap">
+				<include refid="SelectGroupColumn"/>
+		</select>
+<!-- *******************************以下代码是web界面功能配置文件，作者：parachuter************************** -->
+		<!-- 以代理ID获取关注者组数据对象
+			* 
+			* 获取关注者组数据对象
+			* 
+			* @param AgentID    关注接口ID
+			* @return GroupResultMap
+		-->
+		<select id="SelectAgentID" parameterType="int" resultMap="GroupResultMap">
+				<include refid="SelectGroupColumn"/>
+				where GroupID LIKE LTRIM(STR(#{AgentID}))+':%'
+		</select>
+
+
+
+
+</mapper>  

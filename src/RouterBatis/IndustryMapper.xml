@@ -1,0 +1,62 @@
+<?xml version="1.0" encoding="UTF-8" ?>  
+<!DOCTYPE mapper PUBLIC   "-//mybatis.org//DTD Mapper 3.0//EN"  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="RouterBatis.IndustryMapper">
+		<!-- 复用sql语句  查询Wifi_WifiIndustry表所有字段 -->
+		<sql id="SelectIndustryColumn">
+				SELECT	IndustryID,
+								IndustryName,
+								SuperID
+				FROM Industry
+		</sql>
+		<!-- Industry 对象与数据库的对应关系-->
+		<resultMap id="IndustryResultMap" type="HashMap">
+				<!--constructor>
+						<idArg javaType="String" column="STUDENT_ID"/>
+						<arg javaType="String" column="STUDENT_NAME"/>
+						<arg javaType="String" column="STUDENT_SEX"/>
+						<arg javaType="Date" column="STUDENT_BIRTHDAY"/>
+				</constructor-->
+				<id      property="IndustryID"    column="IndustryID"    javaType="int"     jdbcType="INTEGER"/>
+				<result  property="IndustryName"  column="IndustryName"  javaType="String"  jdbcType="VARCHAR"/>
+				<result  property="SuperID"       column="SuperID"       javaType="int"     jdbcType="INTEGER"/>
+		</resultMap>
+		<!-- 插入代理 自动主键-->
+		<insert id="insertIndustry" parameterType="HashMap">
+				INSERT INTO Industry(IndustryName,
+				            SuperID)
+				     VALUES(#{IndustryName},
+			              #{SuperID})
+				<selectKey keyProperty="IndustryID" resultType="int" order="AFTER">
+						select @@IDENTITY as value
+				</selectKey>
+		</insert>
+		<!-- 更新代理信息 -->
+		<update id="updateIndustry" parameterType="HashMap">
+				UPDATE FROM Industry
+				    SET IndustryName = #{IndustryName},
+				        SuperID = #{SuperID}
+				WHERE IndustryID = #{IndustryID};
+		</update>
+		<!-- 删除代理 -->
+		<delete id="deleteIndustryID" parameterType="int">
+				DELETE FROM Industry WHERE IndustryID = #{IndustryID}
+		</delete>
+		<delete id="deleteIndustrySuperID" parameterType="int">
+				DELETE FROM Wifi_WifiIndustry WHERE SuperID = #{SuperID}
+		</delete>
+		
+		<!--以代理ID取代理对象-->
+		<select id="SelectIndustryID" parameterType="int" resultMap="IndustryResultMap">
+				<include refid="SelectIndustryColumn"/>
+				where IndustryID=#{IndustryID}
+		</select>
+		<!-- 取所有代理对象-->
+		<select id="SelectIndustrySuperID" parameterType="int" resultMap="IndustryResultMap">
+				<include refid="SelectIndustryColumn"/>
+				where SuperID=#{SuperID}
+		</select>
+		<!-- 以上级代理ID取下级所有代理对象-->
+		<select id="SelectIndustryAll" resultMap="IndustryResultMap">
+				<include refid="SelectIndustryColumn"/>
+		</select>
+</mapper>

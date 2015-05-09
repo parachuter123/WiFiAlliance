@@ -1,0 +1,384 @@
+<?xml version="1.0" encoding="UTF-8"?>  
+<Root>
+	<Head Name="msg_head_st" LenName="len" TypeName="OrderType">
+		<Ele Name="ver"        DataType="UnsignedByte"  Length="1" DefaultValue="1" />
+		<Ele Name="mode"       DataType="UnsignedByte"  Length="1" DefaultValue="1" />
+		<Ele Name="OrderType"  DataType="UnsignedShort" Length="1" DefaultValue="0" />
+		<Ele Name="len"        DataType="UnsignedShort" Length="1" DefaultValue="1" />
+		<Ele Name="sec_flag"   DataType="UnsignedShort" Length="1" DefaultValue="1" />
+		<Ele Name="crc"        DataType="UnsignedInt"   Length="1" DefaultValue="0" />
+		<Ele Name="router_id"  DataType="UnsignedInt"   Length="1" DefaultValue="0" />
+		<Union KeyName="ver"   Length="1" >
+			<UnionEle Name="third_id"   DataType="Byte" Length="64" DefaultValue="0" Where="2,3,4"/>
+		</Union>
+		<Union KeyName="ver"   Length="1" >
+			<UnionEle Name="hard_seq"   DataType="Byte" Length="64" DefaultValue="0" Where="4"/>
+		</Union>
+	</Head>
+	<Neck Name="msg_order_type">
+		<BodyType ID="0"  Name="msg_order_unknown"           BodyName="" CallbackName="" Remark="" />
+		
+		<BodyType ID="1"  Name="msg_order_auth"              BodyName="cer_msg_head_st"    CallbackName="ConnectRequest"     Remark="请求认证" />
+		<BodyType ID="2"  Name="msg_order_addr"              BodyName="cer_msg_head_st"    CallbackName="ConnectConfirm"     Remark="取审计、认证服务器地址" />
+		<BodyType ID="3"  Name="msg_order_user_req"          BodyName="user_msg_head_st"   CallbackName="UserReq"            Remark="路由器发出的用户信息，比如上下线" />
+		<BodyType ID="4"  Name="msg_order_heart"             BodyName="heart_msg_head_st"  CallbackName="Heart"              Remark="心跳包" />
+		<BodyType ID="5"  Name="msg_order_user_op"           BodyName="user_msg_head_st"   CallbackName="UserOp"             Remark="服务器发出的对用户的操作" />
+		<BodyType ID="6"  Name="msg_order_user_result"       BodyName="user_msg_head_st"   CallbackName="UserResult"         Remark="路由器回复用户操作的结果" />
+		<BodyType ID="7"  Name="msg_order_dns_white"         BodyName="dns_white_list_st"  CallbackName="DnsWhite"           Remark="路由器修改白名单" />
+		<BodyType ID="8"  Name="msg_order_auto_upgrade"      BodyName="auto_upgrade_st"    CallbackName="AutoUpgradeResult"  ReceiveBodyName="wt_result_st" Remark="设置路由器自动升级" />
+		<BodyType ID="9"  Name="msg_order_simple_cache"      BodyName="simple_cache_st"    CallbackName="SimpleCacheResult"  ReceiveBodyName="wt_result_st" Remark="用户路由器简单缓存页面" />
+		<BodyType ID="10" Name="msg_order_simple_gg"         BodyName="wt_simple_gg_st"    CallbackName="SimpleGgResult"     ReceiveBodyName="wt_result_st" Remark="简单JS广告" />
+		<BodyType ID="11" Name="msg_order_third_qq"          BodyName="third_qq_st"        CallbackName="ThirdQq"            Remark="路由器发送QQ信息给服务器" />
+		
+		<BodyType ID="20" Name="msg_order_usb_cache"            BodyName="wt_usb_simple_cache_st"   CallbackName="UsbCache"        Remark="下发USB缓存" />
+		<BodyType ID="21" Name="msg_order_usb_cache_result"     BodyName="wt_result_st"             CallbackName="UsbCacheResult"  Remark="回复USB缓存处理结果" />
+		<BodyType ID="22" Name="msg_order_reboot"               BodyName="wt_reboot_st"             CallbackName="Reboot"          Remark="下发重启操作" />
+		<BodyType ID="23" Name="msg_order_reboot_result"        BodyName="wt_result_st"             CallbackName="RebootResult"    Remark="回复重启操作结果, 需要先回复再重启" />
+		
+		<BodyType ID="25" Name="msg_order_auto_reboot"          BodyName="wt_auto_reboot_st"        CallbackName="AutoReboot"          Remark="下发自动重启操作" />
+		<BodyType ID="26" Name="msg_order_auto_reboot_result"   BodyName="wt_result_st"             CallbackName="AutoRebootResult"    Remark="回复自动重启功能" />
+		
+		<BodyType ID="27" Name="msg_order_dns_white_get"        BodyName="null_st"                  CallbackName="DnsWhiteGet"    Remark="获取配置的白名单" />
+		<BodyType ID="28" Name="msg_order_dns_white_send"       BodyName="dns_white_list_st"        CallbackName="DnsWhiteSend"   Remark="回复白名单" />
+		
+		<BodyType ID="29" Name="msg_order_third_domain_set"     BodyName="wt_third_domain_st"       CallbackName="ThirdDomainSet"     Remark="下发三方认证域名" />
+		<BodyType ID="30" Name="msg_order_third_domain_result"  BodyName="wt_result_st"             CallbackName="ThirdDomainResult"  Remark="回复" />
+		<BodyType ID="31" Name="msg_order_third_domain_get"     BodyName="null_st"                  CallbackName="ThirdDomainGet"     Remark="获取配置认证域名" />
+		<BodyType ID="32" Name="msg_order_third_domain_send"    BodyName="wt_third_domain_st"       CallbackName="ThirdDomainSend"    Remark="回复" />
+		
+		<BodyType ID="33" Name="msg_order_user_qos_set"       BodyName="wt_third_user_qos_st"     CallbackName="UserQosSet"     Remark="下发限速操作" />
+		<BodyType ID="34" Name="msg_order_user_qos_result"    BodyName="wt_result_st"             CallbackName="UserQosResult"  Remark="回复" />
+		<BodyType ID="35" Name="msg_order_user_qos_get"       BodyName="null_st"                  CallbackName="UserQosGet"     Remark="获取限速配置" />
+		<BodyType ID="36" Name="msg_order_user_qos_send"      BodyName="wt_third_user_qos_st"     CallbackName="UserQosSend"    Remark="回复" />
+		
+		<BodyType ID="37" Name="msg_order_app_filter_set"      BodyName="" CallbackName="" Remark="下发行为识别(下载, 视频)" />
+		<BodyType ID="38" Name="msg_order_app_filter_result"   BodyName="" CallbackName="" Remark="回复" />
+		<BodyType ID="39" Name="msg_order_app_filter_get"      BodyName="" CallbackName="" Remark="获取行为识别配置" />
+		<BodyType ID="40" Name="msg_order_app_filter_send"     BodyName="" CallbackName="" Remark="回复" />
+		
+		<BodyType ID="41" Name="msg_order_wireless_config_set"      BodyName="" CallbackName="" Remark="下发无线信息配置" />
+		<BodyType ID="42" Name="msg_order_wireless_config_result"   BodyName="" CallbackName="" Remark="回复" />
+		<BodyType ID="43" Name="msg_order_wireless_config_get"      BodyName="" CallbackName="" Remark="获取无线配置" />
+		<BodyType ID="44" Name="msg_order_wireless_config_send"     BodyName="" CallbackName="" Remark="回复" />
+		
+		<BodyType ID="45" Name="msg_order_speed_get"         BodyName="null_st"                 CallbackName="SpeedGet"    Remark="服务器获取路由器流量信息" />
+		<BodyType ID="46" Name="msg_order_speed_send"        BodyName="wt_third_speed_st"       CallbackName="SpeedSend"   Remark="回复" />
+		
+		<BodyType ID="47" Name="msg_order_pc_noauth_get"     BodyName="null_st"                 CallbackName="PcNoauthGet"    Remark="获取PC免认证配置" />
+		<BodyType ID="48" Name="msg_order_pc_noauth_send"    BodyName="wt_third_pc_noauth_st"   CallbackName="PcNoauthSend"   Remark="回复" />
+		
+		<BodyType ID="49" Name="msg_order_usb_info_get"      BodyName="null_st"                 CallbackName="UsbInfoGet"    Remark="获取USB/SD卡容量信息" />
+		<BodyType ID="50" Name="msg_order_usb_info_send"     BodyName="wt_usb_info_st"          CallbackName="UsbInfoSend"   Remark="回复" />
+		
+		<BodyType ID="51" Name="msg_order_wifi_monitor_set"       BodyName="wt_third_wifi_monitor_st"    CallbackName="WifiMonitorSet"     Remark="配置WIFI探针" />
+		<BodyType ID="52" Name="msg_order_wifi_monitor_result"    BodyName="wt_result_st"                CallbackName="WifiMonitorResult"  Remark="回复" />
+		<BodyType ID="53" Name="msg_order_wifi_monitor_get"       BodyName="null_st"                     CallbackName="WifiMonitorGet"     Remark="获取探针参数" />
+		<BodyType ID="54" Name="msg_order_wifi_monitor_send"      BodyName="wt_third_wifi_monitor_st"    CallbackName="WifiMonitorSend"    Remark="回复" />
+		
+		<BodyType ID="55" Name="msg_order_version_get"            BodyName="null_st"                     CallbackName="VersionGet"    Remark="获取路由器的版本信息" />
+		<BodyType ID="56" Name="msg_order_version_send"           BodyName="wt_router_version_st"        CallbackName="VersionSend"   Remark="回复" />
+		
+		<BodyType ID="57" Name="msg_order_web_keyword_set"       BodyName="wt_third_web_keyword_st"     CallbackName="WebKeywordSet"     Remark="配置行为管理WEB关键字" />
+		<BodyType ID="58" Name="msg_order_web_keyword_result"    BodyName="wt_result_st"                CallbackName="WebKeywordResult"  Remark="回复" />
+		
+		<BodyType ID="59" Name="msg_order_rul_redirect_set"      BodyName="wt_third_url_redirect_st"    CallbackName="RulRedirectSet"     Remark="配置行为管理URL 重定向" />
+		<BodyType ID="60" Name="msg_order_rul_redirect_result"   BodyName="wt_result_st"                CallbackName="RulRedirectResult"  Remark="回复" />
+		
+		<BodyType ID="61" Name="msg_order_mx_app_filter_set"      BodyName="wt_third_mx_app_filter_st"   CallbackName="MxAppFilterSet"     Remark="下发行为识别规则" />
+		<BodyType ID="62" Name="msg_order_mx_app_filter_result"   BodyName="wt_result_st"                CallbackName="MxAppFilterResult"  Remark="回复" />
+		
+		<BodyType ID="63" Name="msg_order_memory_cache_set"       BodyName="wt_usb_simple_cache_st"      CallbackName="MemoryCacheSet"     Remark="操作网页缓存内存" />
+		<BodyType ID="64" Name="msg_order_memory_cache_result"    BodyName="wt_result_st"                CallbackName="MemoryCacheResult"  Remark="回复" />
+		
+		<BodyType ID="65" Name="msg_order_pc_noauth_set"          BodyName="wt_third_pc_noauth_st"       CallbackName="PcNoauthSet"      Remark="设置PC免认证配置" />
+		<BodyType ID="66" Name="msg_order_pc_noauth_result"       BodyName="wt_result_st"                CallbackName="PcNoauthResult"   Remark="回复" />
+		
+		<BodyType ID="68" Name="msg_order_mx_wireless_config_set"      BodyName="wt_mx_wifi_base_conf_so"   CallbackName="MxWirelessConfigSet"     Remark="下发无线信息配置" />
+		<BodyType ID="69" Name="msg_order_mx_wireless_config_result"   BodyName="wt_result_st"              CallbackName="MxWirelessConfigResult"  Remark="回复" />
+		<BodyType ID="70" Name="msg_order_mx_wireless_config_get"      BodyName="null_st"                   CallbackName="MxWirelessConfigGet"     Remark="获取无线配置" />
+		<BodyType ID="71" Name="msg_order_mx_wireless_config_send"     BodyName="wt_result_st"              CallbackName="MxWirelessConfigSend"    Remark="回复" />
+		
+		<BodyType ID="88" Name="msg_order_http_jump_set"           BodyName="wt_third_http_jump_st"      CallbackName="HttpJumpSet"          Remark="Url内容缓存替换" />
+		<BodyType ID="89" Name="msg_order_http_jump_opt_result"    BodyName="wt_result_st"               CallbackName="HttpJumpOptResult"    Remark="发送回复" />
+		<BodyType ID="90" Name="msg_order_http_jump_conf_result"   BodyName="wt_result_st"               CallbackName="HttpJumpConfResult"   Remark="下载设置回复" />
+		
+		
+		
+		<BodyType ID="9995" Name="msg_order_AuthenStart"    BodyName="AuthenStart"   CallbackName="AuthenStart"  Remark="上报认证启动" />
+		<BodyType ID="9996" Name="msg_order_StartResult"    BodyName="null_st"   CallbackName="StartResult"  Remark="回复认证启动" />
+		<BodyType ID="9997" Name="msg_order_AuthenQuit"     BodyName="AuthenQuit"    CallbackName="AuthenQuit"   Remark="上报认证退出" />
+		<BodyType ID="9998" Name="msg_order_RouterStart"    BodyName="RouterStart"   CallbackName="RouterStart"  Remark="上报路由接入" />
+		<BodyType ID="9999" Name="msg_order_RouterQuit"     BodyName="RouterQuit"    CallbackName="RouterQuit"   Remark="上报路由退出" />
+		
+		<BodyType ID="10000" Name="msg_order_UserAccess"     BodyName="UserState"    CallbackName="UserAccess"  Remark="用户上线" />
+		<BodyType ID="10001" Name="msg_order_UserDiscon"     BodyName="UserState"    CallbackName="UserDiscon"   Remark="用户下线" />
+		
+		<BodyType ID="72" Name="msg_order_max"  BodyName=""  CallbackName=""  Remark="" />
+	</Neck>
+	<Body Name="cer_msg_head_st" >
+		<Ele Name="order"          DataType="UnsignedShort" Length="1"   DefaultValue="1" />
+		<Ele Name="srv_type"       DataType="UnsignedByte"  Length="1"   DefaultValue="1" />
+		<Ele Name="pad"            DataType="UnsignedByte"  Length="1"   DefaultValue="1" />
+		<Ele Name="router_seq"     DataType="UnsignedInt"   Length="1"   DefaultValue="0" />
+		<Ele Name="srv_seq"        DataType="UnsignedInt"   Length="1"   DefaultValue="0" />
+		<Ele Name="time"           DataType="UnsignedInt"   Length="1"   DefaultValue="30" />
+		<Ele Name="hard_id"        DataType="UnsignedInt"   Length="1"   DefaultValue="0" />
+		<Ele Name="hard_seq"       DataType="Byte"  Length="64"  DefaultValue="0" />
+		<Ele Name="router_addr"    DataType="Byte"  Length="128" DefaultValue="0" />
+		<Ele Name="router_cont"    DataType="Byte"  Length="32"  DefaultValue="0" />
+		<Ele Name="router_tel"     DataType="Byte"  Length="32"  DefaultValue="0" />
+		<Ele Name="router_dinate"  DataType="Byte"  Length="32"  DefaultValue="0" />
+		<Ele Name="router_agents"  DataType="Byte"  Length="32"  DefaultValue="0" />
+		<Ele Name="dev_name"       DataType="Byte"  Length="32"  DefaultValue="0" />
+		<Ele Name="auth_srv"       DataType="Byte"  Length="64"  DefaultValue="0" />
+		<Ele Name="sj_srv"         DataType="Byte"  Length="64"  DefaultValue="0" />
+		<Ele Name="mng_srv"        DataType="Byte"  Length="64"  DefaultValue="0" />
+		<Ele Name="def_redirect"   DataType="Byte"  Length="128" DefaultValue="0" />
+		<Ele Name="cs_type"        DataType="UnsignedShort" Length="1"   DefaultValue="1" />
+		<Ele Name="url_len"        DataType="UnsignedShort" Length="1"   DefaultValue="0" />
+		<Ele Name="url_data"       DataType="Byte"  Length="url_len"   DefaultValue="0" />
+	</Body>
+	<Body Name="user_msg_head_st" >
+		<Ele Name="cmd"         DataType="UnsignedByte"  Length="1"   DefaultValue="0" />
+		<Ele Name="result"      DataType="UnsignedByte"  Length="1"   DefaultValue="0" />
+		<Ele Name="auth_len"    DataType="UnsignedShort" Length="1"   DefaultValue="0" />
+		<Ele Name="user_ip"     DataType="Int"   Length="1"   DefaultValue="0" />
+		<Ele Name="mac"         DataType="Byte"  Length="6"   DefaultValue="0" />
+		<Ele Name="local_mode"  DataType="UnsignedShort" Length="1"   DefaultValue="0" />
+		<Ele Name="speed"       DataType="UnsignedInt"   Length="2"   DefaultValue="0" />
+		<Ele Name="user_id"     DataType="Byte"  Length="64"  DefaultValue="0" />
+		<Ele Name="auth_time"   DataType="UnsignedInt"   Length="1"   DefaultValue="0" />
+		<Ele Name="flow"        DataType="UnsignedInt"   Length="2"   DefaultValue="0" />
+		<Ele Name="auth_addr"   DataType="Byte"  Length="auth_len"  DefaultValue="0" />
+	</Body>
+	<Body Name="heart_msg_head_st" >
+		<Ele Name="router_id"   DataType="UnsignedInt"   Length="1"   DefaultValue="0" />
+		<Ele Name="user_num"    DataType="UnsignedInt"   Length="1"   DefaultValue="0" />
+	</Body>
+	<Body Name="dns_white_list_st" >
+		<Ele Name="url_len"     DataType="UnsignedShort"  Length="1"   DefaultValue="0" />
+		<Ele Name="url_data"    DataType="Byte"   Length="url_len"   DefaultValue="0" />
+	</Body>
+	<Body Name="auto_upgrade_st" >
+		<Ele Name="url_len"     DataType="UnsignedShort"  Length="1"   DefaultValue="0" />
+		<Ele Name="url_data"    DataType="Byte"   Length="url_len"   DefaultValue="0" />
+	</Body>
+	<Body Name="simple_cache_st" >
+		<Ele Name="url_len"     DataType="UnsignedShort"  Length="1"   DefaultValue="0" />
+		<Ele Name="url_data"    DataType="Byte"   Length="url_len"   DefaultValue="0" />
+	</Body>
+	<Body Name="wt_result_st" >
+		<Ele Name="result"     DataType="UnsignedShort"  Length="1"   DefaultValue="0" />
+		<Ele Name="len"        DataType="UnsignedShort"  Length="1"   DefaultValue="0" />
+		<Ele Name="data"       DataType="Byte"   Length="len"   DefaultValue="0" />
+	</Body>
+	<Body Name="wt_usb_simple_cache_st" >
+		<Ele Name="opt"        DataType="UnsignedShort"  Length="1"   DefaultValue="0" />
+		<Ele Name="name"       DataType="Byte"   Length="32"   DefaultValue="0" />
+		<Ele Name="len"        DataType="UnsignedShort"  Length="1"   DefaultValue="0" />
+		<Ele Name="data"       DataType="Byte"   Length="len"   DefaultValue="0" />
+	</Body>
+	<Body Name="wt_simple_gg_st" >
+		<Ele Name="en"         DataType="UnsignedInt"   Length="1"   DefaultValue="0" />
+		<Ele Name="js_len"     DataType="UnsignedInt"   Length="1"   DefaultValue="0" />
+		<Ele Name="dns_cnt"    DataType="UnsignedInt"   Length="1"   DefaultValue="0" />
+		<Ele Name="data_len"   DataType="UnsignedInt"   Length="1"   DefaultValue="0" />
+		<Ele Name="data"       DataType="Byte"  Length="data_len"   DefaultValue="0" />
+	</Body>
+	<Body Name="wt_reboot_st" >
+		<Ele Name="type"      DataType="UnsignedInt"   Length="1"   DefaultValue="0" />
+	</Body>
+	<Body Name="third_qq_st" >
+		<Ele Name="qq_num"    DataType="UnsignedInt"   Length="1"   DefaultValue="0" />
+		<Ele Name="mac"       DataType="Byte"  Length="6"   DefaultValue="0" />
+		<Ele Name="qq_type"   DataType="UnsignedShort" Length="1"   DefaultValue="0" />
+	</Body>
+	<Body Name="wt_auto_reboot_st" >
+		<Ele Name="enable"    DataType="UnsignedInt"   Length="1"   DefaultValue="0" />
+		<Ele Name="time"      DataType="Byte"  Length="64"  DefaultValue="0" />
+	</Body>
+	<Body Name="wt_third_domain_st" >
+		<Ele Name="data_len"   DataType="UnsignedShort" Length="1"   DefaultValue="0" />
+		<Ele Name="data"       DataType="Byte"  Length="data_len"   DefaultValue="0" />
+	</Body>
+	<Body Name="wt_third_user_qos_st" >
+		<Ele Name="enable"     DataType="UnsignedInt"   Length="1"   DefaultValue="0" />
+		<Ele Name="qos_up"     DataType="UnsignedInt"   Length="1"   DefaultValue="0" />
+		<Ele Name="qos_down"   DataType="UnsignedInt"   Length="1"   DefaultValue="0" />
+		<Ele Name="exp_ip_num" DataType="UnsignedInt"   Length="1"   DefaultValue="0" />
+		<Ele Name="exp_ip"     DataType="UnsignedInt"   Length="exp_ip_num"   DefaultValue="0" />
+	</Body>
+	<Body Name="wt_third_speed_st" >
+		<Ele Name="speed_up"   DataType="UnsignedInt"   Length="1"   DefaultValue="0" />
+		<Ele Name="speed_down" DataType="UnsignedInt"   Length="1"   DefaultValue="0" />
+	</Body>
+	<Body Name="wt_mx_wifi_base_conf_so" >
+		<Ele Name="wifi_enable"         DataType="UnsignedByte"  Length="1"  DefaultValue="0" />
+		<Ele Name="wifi_mode"           DataType="UnsignedByte"  Length="1"  DefaultValue="0" />
+		<Ele Name="wifi_channel"        DataType="UnsignedByte"  Length="1"  DefaultValue="0" />
+		<Ele Name="wifi_ssid_num"       DataType="UnsignedByte"  Length="1"  DefaultValue="0" />
+		<Ele Name="wifi_isolated"       DataType="UnsignedByte"  Length="1"  DefaultValue="0" />
+		<Ele Name="wifi_rssi_down"      DataType="Byte"          Length="1"  DefaultValue="0" />
+		<Ele Name="wifi_txpower"        DataType="UnsignedByte"  Length="1"  DefaultValue="0" />
+		<Ele Name="wifi_pad"            DataType="UnsignedByte"  Length="1"  DefaultValue="0" />
+		<Ele Name="run_mode"            DataType="UnsignedByte"  Length="1"  DefaultValue="0" />
+		<Ele Name="HT_BW"               DataType="UnsignedByte"  Length="1"  DefaultValue="0" />
+		<Ele Name="HT_EXTCHA"           DataType="UnsignedByte"  Length="1"  DefaultValue="0" />
+		<Ele Name="HT_BSSCoexistence"   DataType="UnsignedByte"  Length="1"  DefaultValue="0" />
+		<BodyEle Name="list"            Length="5"  BodyName="wt_wifi_base_list_so"/>
+	</Body>
+	<Body Name="wt_wifi_base_list_so" >
+		<Ele Name="ssid"           DataType="Byte"  Length="32"  DefaultValue="0" />
+		<Ele Name="hide"           DataType="UnsignedByte"  Length="1"  DefaultValue="0" />
+		<Ele Name="isolated"       DataType="UnsignedByte"  Length="1"  DefaultValue="0" />
+		<Ele Name="security_mode"  DataType="UnsignedByte"  Length="1"  DefaultValue="0" />
+		<Ele Name="ssid_charset"   DataType="UnsignedByte"  Length="1"  DefaultValue="0" />
+		<Ele Name="balanced"       DataType="Byte"          Length="1"  DefaultValue="0" />
+		<Ele Name="pad"            DataType="Byte"  Length="3"  DefaultValue="0" />
+		<Union KeyName="security_mode"   Length="1" >
+			<UnionBodyEle Name="wpa"  Length="1"  BodyName="wt_wpa_key_so"  Where="0,1,2,3"/>
+			<UnionBodyEle Name="wep"  Length="1"  BodyName="wt_wep_key_so"  Where="4,5,6,7,8,9,10"/>
+		</Union>
+	</Body>
+	<Body Name="wt_wpa_key_so" >
+		<Ele Name="key"                DataType="Byte"  Length="64"  DefaultValue="0" />
+		<Ele Name="rekeyinterval"      DataType="UnsignedInt"   Length="1"   DefaultValue="0" />
+		<Ele Name="radius_server"      DataType="UnsignedInt"   Length="1"   DefaultValue="0" />
+		<Ele Name="session_timeout"    DataType="UnsignedInt"   Length="1"   DefaultValue="0" />
+		<Ele Name="radius_port"        DataType="UnsignedShort" Length="1"   DefaultValue="0" />
+		<Ele Name="PMKCachePeriod"     DataType="UnsignedShort" Length="1"   DefaultValue="0" />
+		<Ele Name="PreAuthentication"  DataType="UnsignedShort" Length="1"   DefaultValue="0" />
+		<Ele Name="encrypt_type"       DataType="UnsignedByte"  Length="1"   DefaultValue="0" />
+		<Ele Name="pad"                DataType="UnsignedByte"  Length="1"   DefaultValue="0" />
+	</Body>
+	<Body Name="wt_wep_key_so" >
+		<Ele Name="defaultkey"         DataType="UnsignedByte"  Length="1"   DefaultValue="0" />
+		<Ele Name="encrypt_type"       DataType="UnsignedByte"  Length="1"   DefaultValue="0" />
+		<Ele Name="pad"                DataType="Byte"  Length="2"   DefaultValue="0" />
+		<Ele Name="key1type"           DataType="UnsignedByte"  Length="1"   DefaultValue="0" />
+		<Ele Name="key1"               DataType="Byte"  Length="27"  DefaultValue="0" />
+		<Ele Name="key2type"           DataType="UnsignedByte"  Length="1"   DefaultValue="0" />
+		<Ele Name="key2"               DataType="Byte"  Length="27"  DefaultValue="0" />
+		<Ele Name="key3type"           DataType="UnsignedByte"  Length="1"   DefaultValue="0" />
+		<Ele Name="key3"               DataType="Byte"  Length="27"  DefaultValue="0" />
+		<Ele Name="key4type"           DataType="UnsignedByte"  Length="1"   DefaultValue="0" />
+		<Ele Name="key4"               DataType="Byte"  Length="27"  DefaultValue="0" />
+	</Body>
+	<Body Name="wt_third_pc_noauth_st" >
+		<Ele Name="pc_noauth_enable"   DataType="UnsignedInt"   Length="1"   DefaultValue="0" />
+	</Body>
+	<Body Name="wt_usb_info_st" >
+		<Ele Name="size"   DataType="UnsignedInt"   Length="1"   DefaultValue="0" />
+		<Ele Name="used"   DataType="UnsignedInt"   Length="1"   DefaultValue="0" />
+	</Body>
+	<Body Name="wt_third_wifi_monitor_st" >
+		<Ele Name="state"    DataType="UnsignedShort" Length="1"   DefaultValue="0" />
+		<Ele Name="port"     DataType="UnsignedShort" Length="1"   DefaultValue="0" />
+		<Ele Name="time"     DataType="UnsignedShort" Length="1"   DefaultValue="0" />
+		<Ele Name="timeout"  DataType="UnsignedShort" Length="1"   DefaultValue="0" />
+		<Ele Name="address"  DataType="Byte"  Length="64"  DefaultValue="0" />
+	</Body>
+	<Body Name="wt_router_version_st" >
+		<Ele Name="version"  DataType="Byte"  Length="32"  DefaultValue="0" />
+	</Body>
+	<Body Name="wt_third_web_keyword_st" >
+		<Ele Name="opt"             DataType="Byte"  Length="8"   DefaultValue="0" />
+		<Ele Name="def"             DataType="Byte"  Length="4"   DefaultValue="0" />
+		<Ele Name="log"             DataType="Byte"  Length="4"   DefaultValue="0" />
+		<Ele Name="block"           DataType="Byte"  Length="4"   DefaultValue="0" />
+		<Ele Name="en"              DataType="Byte"  Length="4"   DefaultValue="0" />
+		<Ele Name="name"            DataType="Byte"  Length="32"   DefaultValue="0" />
+		<Ele Name="keyword_gb2312"  DataType="Byte"  Length="64"  DefaultValue="0" />
+		<Ele Name="keyword_utf8"    DataType="Byte"  Length="64"  DefaultValue="0" />
+	</Body>
+	<Body Name="wt_third_url_redirect_st" >
+		<Ele Name="en"          DataType="Byte"  Length="4"    DefaultValue="0" />
+		<Ele Name="name"        DataType="Byte"  Length="32"   DefaultValue="0" />
+		<Ele Name="host"        DataType="Byte"  Length="32"   DefaultValue="0" />
+		<Ele Name="host_flag"   DataType="Byte"  Length="4"    DefaultValue="0" />
+		<Ele Name="url"         DataType="Byte"  Length="64"   DefaultValue="0" />
+		<Ele Name="url_flag"    DataType="Byte"  Length="4"    DefaultValue="0" />
+		<Ele Name="parm"        DataType="Byte"  Length="64"   DefaultValue="0" />
+		<Ele Name="parm_flag"   DataType="Byte"  Length="4"    DefaultValue="0" />
+		<Ele Name="urlrd"       DataType="Byte"  Length="128"  DefaultValue="0" />
+		<Ele Name="ld_en"       DataType="Byte"  Length="4"    DefaultValue="0" />
+		<Ele Name="ips"         DataType="Byte"  Length="64"   DefaultValue="0" />
+		<Ele Name="log"         DataType="Byte"  Length="4"    DefaultValue="0" />
+		<Ele Name="time"        DataType="Byte"  Length="64"   DefaultValue="0" />
+		<Ele Name="opt"         DataType="Byte"  Length="8"    DefaultValue="0" />
+	</Body>
+	<Body Name="wt_third_mx_app_filter_st" >
+		<Ele Name="en"            DataType="Byte"  Length="4"    DefaultValue="0" />
+		<Ele Name="name"          DataType="Byte"  Length="32"   DefaultValue="0" />
+		<Ele Name="act"           DataType="Byte"  Length="4"    DefaultValue="0" />
+		<Ele Name="user_id"       DataType="Byte"  Length="64"   DefaultValue="0" />
+		<Ele Name="shibie_name"   DataType="Byte"  Length="128"  DefaultValue="0" />
+		<Ele Name="log"           DataType="Byte"  Length="4"    DefaultValue="0" />
+		<Ele Name="time"          DataType="Byte"  Length="64"   DefaultValue="0" />
+		<Ele Name="opt"           DataType="Byte"  Length="8"    DefaultValue="0" />
+	</Body>
+	<Body Name="wt_third_wifi_monitor_st" >
+		<Ele Name="opt"   DataType="UnsignedShort" Length="1"   DefaultValue="0" />
+		<Ele Name="name"  DataType="Byte"  Length="32"  DefaultValue="0" />
+		<Ele Name="len"   DataType="UnsignedShort" Length="1"   DefaultValue="0" />
+		<Ele Name="url"   DataType="Byte"  Length="len"  DefaultValue="0" />
+	</Body>
+	<!-- 以下备用 -->
+	<Body Name="wifi_data_head" >
+		<Ele Name="msgHeader"  DataType="UnsignedShort" Length="1"    DefaultValue="0" />
+		<Ele Name="pad"        DataType="UnsignedShort" Length="1"    DefaultValue="0" />
+		<Ele Name="version"    DataType="UnsignedByte"  Length="1"    DefaultValue="0" />
+		<Ele Name="flag"       DataType="UnsignedByte"  Length="1"    DefaultValue="0" />
+		<Ele Name="len"        DataType="UnsignedShort" Length="1"    DefaultValue="0" />
+		<Ele Name="time"       DataType="UnsignedShort" Length="1"    DefaultValue="0" />
+		<Ele Name="ap_mac"     DataType="Byte"  Length="6"    DefaultValue="0" />
+		<Ele Name="Timestamp"  DataType="UnsignedInt"   Length="1"    DefaultValue="0" />
+		<Ele Name="num"        DataType="UnsignedInt"   Length="1"    DefaultValue="0" />
+		<Ele Name="data"       DataType="Byte"  Length="num"  DefaultValue="0" />
+	</Body>
+	<Body Name="wifi_client_st" >
+		<Ele Name="Rssi"       DataType="Byte"          Length="1"    DefaultValue="0" />
+		<Ele Name="flag"       DataType="UnsignedByte"  Length="1"    DefaultValue="0" />
+		<Ele Name="mac"        DataType="Byte"  Length="6"    DefaultValue="0" />
+		<Ele Name="assoc_mac"  DataType="Byte"  Length="6"    DefaultValue="0" />
+		<Ele Name="mac"        DataType="UnsignedByte"  Length="1"    DefaultValue="0" />
+		<Ele Name="type"       DataType="UnsignedByte"  Length="1"    DefaultValue="0" />
+		<Ele Name="age"        DataType="UnsignedInt"   Length="1"    DefaultValue="0" />
+	</Body>
+	<Body Name="wt_third_http_jump_st" >
+		<Ele Name="source_url"        DataType="Byte"         Length="512"   DefaultValue="0" />
+		<Ele Name="goal_url"          DataType="Byte"         Length="512"   DefaultValue="0" />
+	</Body>
+	<Body Name="null_st" >
+	</Body>
+	<Body Name="AuthenStart" >
+		<Ele Name="AuthenID"          DataType="Int"   Length="1"    DefaultValue="0" />
+		<Ele Name="AuthenName"        DataType="Byte"  Length="64"   DefaultValue="0" />
+		<Ele Name="ConnectNumber"     DataType="Int"   Length="1"    DefaultValue="0" />
+		<Ele Name="MaxConnectNumber"  DataType="Int"   Length="1"    DefaultValue="0" />
+		<Ele Name="NetworkAddr"       DataType="Byte"  Length="64"   DefaultValue="0" />
+		<Ele Name="ReportCode"        DataType="Byte"  Length="64"   DefaultValue="0" />
+		<Ele Name="WebPort"           DataType="UnsignedShort"   Length="1"    DefaultValue="0" />
+		<Ele Name="AuthenPort"        DataType="UnsignedShort"   Length="1"    DefaultValue="0" />
+	</Body>
+	<Body Name="AuthenQuit" >
+		<Ele Name="ReportCode"        DataType="Byte"         Length="64"   DefaultValue="0" />
+	</Body>
+	<Body Name="RouterStart" >
+		<Ele Name="ReportCode"        DataType="Byte"         Length="64"   DefaultValue="0" />
+		<Ele Name="HardSeq"           DataType="Byte"         Length="64"   DefaultValue="0" />
+	</Body>
+	<Body Name="RouterQuit" >
+		<Ele Name="HardSeq"           DataType="Byte"         Length="64"   DefaultValue="0" />
+	</Body>
+	
+	
+	<Body Name="UserState" >
+		<Ele Name="HardSeq"           DataType="Byte"         Length="64"   DefaultValue="0" />
+		<Ele Name="TerminalID"        DataType="Byte"         Length="64"   DefaultValue="0" />
+	</Body>
+	
+	
+	
+	
+</Root>

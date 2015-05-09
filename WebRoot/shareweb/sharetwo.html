@@ -1,0 +1,190 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>shareone.html</title>
+	
+    <meta name="keywords" content="keyword1,keyword2,keyword3">
+    <meta name="description" content="this is my page">
+    <meta name="content-type" content="text/html; charset=UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    
+    <!--<link rel="stylesheet" type="text/css" href="./styles.css">-->
+	<!-- 新 Bootstrap 核心 CSS 文件 -->
+	<link rel="stylesheet" href="http://cdn.bootcss.com/bootstrap/3.3.0/css/bootstrap.min.css">
+	
+	<!-- jQuery文件。务必在bootstrap.min.js 之前引入 -->
+	<script src="http://cdn.bootcss.com/jquery/1.11.1/jquery.min.js"></script>
+	
+	<!-- 最新的 Bootstrap 核心 JavaScript 文件 -->
+	<script src="http://cdn.bootcss.com/bootstrap/3.3.0/js/bootstrap.min.js"></script>
+	<style>
+		.fontmine{
+			font-family:"msyhl53877","Microsoft Yahei",Helvetica,Arial,sans-serif;
+			display:inline;
+		}
+		body{background:#F1F1F1;}
+		.head{height:10px;background-color:#7564CE;}
+		.panel{
+			margin-left:10px;
+			margin-right:10px;
+		}
+		.btn-primary {
+			color: #fff;
+			background-color: #7564CE;
+			border-color: #7564CE;
+		}
+		.btn-primary:hover {
+			color: #fff;
+			background-color: #7564CE;
+			border-color: #7564CE;
+		}
+		#btn-primary {
+			color: #fff;
+			background-color: #7564CE;
+			border-color: #7564CE;
+			border-radius: 3px;
+		}
+		#btn-primary:hover {
+			color: #fff;
+			background-color: #7500CE;
+			border-color: #7500CE;
+			border-radius: 2px;
+		}
+		.modal {
+			position: fixed;
+			top: 0px;
+			right: 0;
+			bottom: 0;
+			left: 0;
+			z-index: 1040;
+			display: none;
+			overflow: hidden;
+			-webkit-overflow-scrolling: touch;
+			outline: 0;
+		}
+		.modal-dialog {
+			position: relative;
+			width: auto;
+			margin-top:140px;
+			margin-left:20px;
+			margin-right:20px;
+			margin-bottom:20px;
+		}
+		.input-group .form-control:first-child{
+			border-top-right-radius:4px;
+			border-bottom-right-radius: 4px;
+			border-top-left-radius:4px;
+			border-bottom-left-radius: 4px;		
+		}
+		.phoneinput{
+			width:200px;
+		}
+		.modal-body {
+			position: relative;
+			padding-bottom: 0px;
+		}
+		.modal-footer {
+			padding-top:0px;
+			padding-left:15px;
+			padding-right:15px;
+			padding-bottom:10px;
+			text-align: right;
+			border-top: 1px solid #fff;
+		}
+		
+	</style>
+  </head>
+  <body role="document">
+  	<div class="head">
+    	
+    </div>
+	<div class="panel panel-default">
+	  <div class="panel-heading"><p class="fontmine">以下是关注后的效果图</p></div>
+	  <div class="panel-body">
+		<div class="container-fluid">
+		<div class="row">
+		  <div class="col-xs-4"><img src="imgs/one.png" alt="Responsive image" style="width:100%;height:100%;"/></div>
+		  <div class="col-xs-8"><p class="fontmine">标题标题标题标题标题标题标题标题标题标题</p></div>
+		</div>
+		</div>
+	  </div>
+	</div>
+	
+	<div class="panel panel-default">
+	  <div class="panel-heading"><p class="fontmine">文章内容</p></div>
+	  <div class="panel-body">
+		<div class="container-fluid">
+		<div class="row">
+		  <div class="col-xs-12"><p class="fontmine">标题标题标题标题标题标题标题标题标题标题标题标题标题标题标题标题标题标题标题标题</p>
+		  </div>
+		</div>
+		<br/>
+		</div>
+	  </div>
+	</div>
+	<div class="container-fluid" style="margin-bottom:40px;">
+		<div class="row">
+		  <div class="col-xs-12">
+			<center>
+				<button type="button" class="btn btn-lg" id="btn-primary" onclick="showDialog()">
+					<p class="fontmine">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;分&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;享&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</p>
+				</button>
+			</center>
+		  </div>
+		</div>
+		<div class="row">
+		  <div class="col-xs-12">
+			<center>
+				<p class="fontmine">此次活动共有1200人分享</p>
+			</center>
+		  </div>
+		</div>
+	</div>
+	
+	<!-- 新建路由信息Start -->
+	<div class="modal fade" id="shareDialog">
+		<div class="modal-dialog">
+			<div class="modal-content">				
+				<div class="modal-body">
+					<form role="form" id="CreateForm">
+                    	<div class="container">
+                        	<div class="row">
+                            	<div class="form-group phoneinput col-xs-12">
+                                    <div class="input-group">
+                                      <input class="form-control" type="tel" placeholder="请输入手机号">
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="row">
+                            	<div class="form-group col-xs-12">
+                                    <div class="input-group">
+                                      <input class="form-control" type="text" id="authcode"  placeholder="验证码">
+                                      <div class="input-group-addon"><p class="fontmine">取验证码</p></div>
+                                    </div>							
+                                </div>
+                            </div>
+                        </div>
+					</form>
+				</div>
+				<div class="modal-footer">
+					<button type="button" class="btn btn-default" data-dismiss="modal"><p class="fontmine">取消</p></button>
+					<button type="button" class="btn btn-primary" id="ModelBtn" onclick="" data-dismiss="modal"><p class="fontmine">确认</p></button>
+				</div>
+			</div>
+			<!-- /.modal-content -->
+		</div>
+		<!-- /.modal-dialog -->
+	</div>
+	<!-- /.modal -->
+	<!-- 新建路由信息End -->
+	
+	<footer style="line-height:40px;position:fixed;width:100%;bottom:0px;">
+		<div style="text-align:center;background-color:gray;"><p class="fontmine">圣玛尼亚软件提供技术支持</p></div>
+	</footer>
+	<script>
+		function showDialog(){
+			$("#shareDialog").modal("show");
+		}
+	</script>
+  </body>
+</html>

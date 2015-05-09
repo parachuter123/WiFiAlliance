@@ -1,0 +1,105 @@
+<?xml version="1.0" encoding="UTF-8" ?>  
+<!DOCTYPE mapper PUBLIC   "-//mybatis.org//DTD Mapper 3.0//EN"  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="RouterBatis.TemplateParamMapper">
+		<!-- 复用sql语句  查询Wifi_AdInfo表所有字段 -->
+		<sql id="SelectInfoColumn">
+				SELECT	ParamID,
+								EleID,
+								ParamNumber,
+								MethodName,
+								ParamName,
+								ParamValue,
+								TemplateKey,
+								ParamType,
+								ParamRemark
+				FROM Wifi_TemplateParam
+		</sql>
+		<!-- ParamResultMap 参数说明
+			* 
+			* 说明:
+			* 
+			* @param ParamID         参数ID
+			* @param EleID           元素ID
+			* @param MethodName      方法名称
+			* @param ParamNumber     参数数量
+			* @param ParamName       参数名称
+			* @param ParamValue      参数值
+			* @param TemplateKey     模板ID
+			* @return HashMap
+		-->
+		<resultMap id="ParamResultMap" type="HashMap">
+				<id      property="ParamID"      column="ParamID"      javaType="String"  jdbcType="VARCHAR"/>
+				<result  property="EleID"        column="EleID"        javaType="String"  jdbcType="VARCHAR"/>
+				<result  property="ParamNumber"  column="ParamNumber"  javaType="int"     jdbcType="INTEGER"/>
+				<result  property="MethodName"   column="MethodName"   javaType="String"  jdbcType="VARCHAR"/>
+				<result  property="ParamName"    column="ParamName"    javaType="String"  jdbcType="VARCHAR"/>
+				<result  property="ParamValue"   column="ParamValue"   javaType="String"  jdbcType="VARCHAR"/>
+				<result  property="TemplateKey"  column="TemplateKey"  javaType="String"  jdbcType="VARCHAR"/>
+				<result  property="ParamType"   column="ParamType"   javaType="int"  jdbcType="INTEGER"/>
+				<result  property="ParamRemark"   column="ParamRemark"   javaType="String"  jdbcType="VARCHAR"/>
+		</resultMap>
+		<!-- 插入代理 自动主键-->
+		<insert id="insertParam" parameterType="HashMap">
+				INSERT INTO Wifi_TemplateParam(ParamID,
+										EleID,
+										ParamNumber,
+										MethodName,
+										ParamName,
+										ParamValue,
+										TemplateKey,
+										ParamType,
+										ParamRemark)
+				     VALUES(#{TemplateKey,jdbcType=VARCHAR}+'>'+#{EleID,jdbcType=VARCHAR},
+			              #{EleID,jdbcType=VARCHAR},
+			              #{ParamNumber,jdbcType=INTEGER},
+			              #{MethodName,jdbcType=VARCHAR},
+			              #{ParamName,jdbcType=VARCHAR},
+			              #{ParamValue,jdbcType=VARCHAR},
+			              #{TemplateKey,jdbcType=VARCHAR},
+			              #{ParamType,jdbcType=INTEGER},
+			              #{ParamRemark,jdbcType=VARCHAR})
+		</insert>
+		<!-- 更新代理信息 -->
+		<update id="updateParam" parameterType="HashMap">
+				UPDATE Wifi_TemplateParam
+				    SET ParamNumber = #{ParamNumber,jdbcType=INTEGER},
+				    	EleID = #{EleID,jdbcType=VARCHAR},
+				        MethodName = #{MethodName,jdbcType=VARCHAR},
+				        ParamName = #{ParamName,jdbcType=VARCHAR},
+				        ParamValue = #{ParamValue,jdbcType=VARCHAR},
+				        TemplateKey = #{TemplateKey,jdbcType=VARCHAR},
+				        ParamType = #{ParamType,jdbcType=INTEGER},
+				        ParamRemark = #{ParamRemark,jdbcType=VARCHAR}
+				WHERE ParamID = #{TemplateKey,jdbcType=VARCHAR}+'>'+#{EleID,jdbcType=VARCHAR}
+		</update>
+		<!-- 删除代理 -->
+		<delete id="deleteParamID" parameterType="String">
+				DELETE Wifi_TemplateParam WHERE ParamID = #{ParamID}
+		</delete>
+		<delete id="deleteTemplateKey" parameterType="String">
+				DELETE Wifi_TemplateParam WHERE ParamID like #{TemplateKey}+'>%'
+		</delete>
+		
+		<!-- 以模板ID获取模板数据对象
+			* 
+			* 说明:
+			* 
+			* @param id 模板ID
+			* @return InfoResultMap
+		-->
+		<select id="SelectTemplateKey" parameterType="String" resultMap="ParamResultMap">
+				<include refid="SelectInfoColumn"/>
+				WHERE ParamID like #{TemplateKey}+'>%'
+		</select>
+<!-- *******************************一下代码是web界面功能配置文件，作者：parachuter******************************************* -->
+		<select id="SelectParamID" parameterType="String" resultType="int">
+			select count(*) FROM Wifi_TemplateParam where ParamID = #{ParamID}
+		</select>
+		<select id="SelectTemplateParamByParamID" parameterType="String" resultMap="ParamResultMap">
+			<include refid="SelectInfoColumn"/>
+			 where ParamID = #{ParamID}
+		</select>
+
+
+		
+</mapper>  

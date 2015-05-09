@@ -1,0 +1,267 @@
+<?xml version="1.0" encoding="UTF-8" ?>  
+<!DOCTYPE mapper PUBLIC   "-//mybatis.org//DTD Mapper 3.0//EN"  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="RouterBatis.BusinesShopMapper">
+		<!-- 复用sql语句  查询Wifi_WifiModel表所有字段 -->
+		<sql id="SelectBusinesShopColumn">
+				SELECT	BusinessShopID,
+								LoginName,
+								PassWord,
+								BusinessName,
+								BusinessAddress,
+								BusinessBoss,
+								BossMobile,
+								BusinessContact,
+								ContactMobile,
+								BusinessPhone,
+								BusinessFax,
+								IndustryID,
+								BusinessNatureID,
+								ProCityID,
+								AgentID,
+								WifiShare,
+								BusinessHomeAddress,
+								LogoURL,
+								WelcomePictureURL,
+								AgentGuestGroupID,
+								ShareGuestGroupID
+				FROM Wifi_BusinessShop
+		</sql>
+		<!-- BlackWhiteList 对象与数据库的对应关系-->
+		<resultMap id="BusinesShopResultMap" type="HashMap">
+				<!--constructor>
+						<idArg javaType="String" column="STUDENT_ID"/>
+						<arg javaType="String" column="STUDENT_NAME"/>
+				</constructor-->
+				<id      property="BusinesShopID"      column="BusinessShopID"       javaType="String"   jdbcType="VARCHAR"/>
+				<result  property="LoginName"          column="LoginName"            javaType="String"   jdbcType="VARCHAR"/>
+				<result  property="PassWord"           column="PassWord"             javaType="String"   jdbcType="VARCHAR"/>
+				<result  property="BusinesName"        column="BusinessName"         javaType="String"   jdbcType="VARCHAR"/>
+				<result  property="BusinesAddres"      column="BusinessAddress"      javaType="String"   jdbcType="VARCHAR"/>
+				<result  property="BusinesBoss"        column="BusinessBoss"         javaType="String"   jdbcType="VARCHAR"/>
+				<result  property="BossMobile"         column="BossMobile"           javaType="String"   jdbcType="VARCHAR"/>
+				<result  property="BusinesContact"     column="BusinessContact"      javaType="String"   jdbcType="VARCHAR"/>
+				<result  property="ContactMobile"      column="ContactMobile"        javaType="String"   jdbcType="VARCHAR"/>
+				<result  property="BusinesPhone"       column="BusinessPhone"        javaType="String"   jdbcType="VARCHAR"/>
+				<result  property="BusinesFax"         column="BusinessFax"          javaType="String"   jdbcType="VARCHAR"/>
+				<result  property="IndustryID"         column="IndustryID"           javaType="int"      jdbcType="INTEGER"/>
+				<result  property="NatureID"           column="BusinessNatureID"     javaType="int"      jdbcType="INTEGER"/>
+				<result  property="ProCityID"          column="ProCityID"            javaType="int"      jdbcType="INTEGER"/>
+				<result  property="AgentID"            column="AgentID"              javaType="int"      jdbcType="INTEGER"/>
+				<result  property="HomeAddres"         column="BusinessHomeAddress"  javaType="String"   jdbcType="VARCHAR"/>
+				<result  property="LogoURL"            column="LogoURL"              javaType="String"   jdbcType="VARCHAR"/>
+				<result  property="WelcomePictureURL"  column="WelcomePictureURL"    javaType="String"   jdbcType="VARCHAR"/>
+				
+				
+				<result  property="WifiShare"          column="WifiShare"            javaType="Boolean"  jdbcType="BIT"/>
+				<result  property="AgentGuestGroupID"  column="AgentGuestGroupID"    javaType="String"   jdbcType="VARCHAR"/>
+				<result  property="ShareGuestGroupID"  column="ShareGuestGroupID"    javaType="String"   jdbcType="VARCHAR"/>
+				
+				
+				
+		</resultMap>
+		<!-- 插入-->
+		<insert id="insertBusinesShop" parameterType="HashMap">
+				INSERT INTO Wifi_BusinessShop(BusinessShopID,
+										LoginName,
+										PassWord,
+										BusinessName,
+										BusinessAddress,
+										BusinessBoss,
+										BossMobile,
+										BusinessContact,
+										ContactMobile,
+										BusinessPhone,
+										BusinessFax,
+										IndustryID,
+										BusinessNatureID,
+										ProCityID,
+										AgentID,
+										WifiShare,
+										BusinessHomeAddress,
+										LogoURL)
+				     VALUES(LTRIM(STR(#{AgentID}))+'_'+#{LoginName},
+										#{LoginName,jdbcType=VARCHAR},
+										#{PassWord,jdbcType=VARCHAR},
+										#{BusinesName,jdbcType=VARCHAR},
+										#{BusinesAddres,jdbcType=VARCHAR},
+										#{BusinesBoss,jdbcType=VARCHAR},
+										#{BossMobile,jdbcType=VARCHAR},
+										#{BusinesContact,jdbcType=VARCHAR},
+										#{ContactMobile,jdbcType=VARCHAR},
+										#{BusinesPhone,jdbcType=VARCHAR},
+										#{BusinesFax,jdbcType=VARCHAR},
+										#{IndustryID,jdbcType=INTEGER},
+										#{NatureID,jdbcType=INTEGER},
+										#{ProCityID,jdbcType=INTEGER},
+										#{AgentID,jdbcType=INTEGER},
+										#{WifiShare,jdbcType=BIT},
+										#{HomeAddres,jdbcType=VARCHAR},
+										#{LogoURL,jdbcType=VARCHAR})
+		</insert>
+		<!-- 以商家对象BusinessShopID同步数据库
+			* @param Map            商家对象
+		-->
+		<update id="updateBusinesShop" parameterType="HashMap">
+				UPDATE Wifi_BusinessShop
+				    SET PassWord = #{PassWord,jdbcType=VARCHAR},
+								BusinessName = #{BusinesName,jdbcType=VARCHAR},
+								BusinessAddress = #{BusinesAddres,jdbcType=VARCHAR},
+								BusinessBoss = #{BusinesBoss,jdbcType=VARCHAR},
+								BossMobile = #{BossMobile,jdbcType=VARCHAR},
+								BusinessContact = #{BusinesContact,jdbcType=VARCHAR},
+								ContactMobile = #{ContactMobile,jdbcType=VARCHAR},
+								BusinessPhone = #{BusinesPhone,jdbcType=VARCHAR},
+								BusinessFax = #{BusinesFax,jdbcType=VARCHAR},
+								IndustryID = #{IndustryID,jdbcType=INTEGER},
+								BusinessNatureID = #{NatureID,jdbcType=INTEGER},
+								ProCityID = #{ProCityID,jdbcType=INTEGER},
+								AgentID = #{AgentID,jdbcType=INTEGER},
+								WifiShare = #{WifiShare,jdbcType=BIT},
+								BusinessHomeAddress = #{HomeAddres,jdbcType=VARCHAR},
+								LogoURL = #{LogoURL,jdbcType=VARCHAR},
+								WelcomePictureURL = #{WelcomePictureURL,jdbcType=VARCHAR},
+								AgentGuestGroupID = #{AgentGuestGroupID,jdbcType=VARCHAR},
+								ShareGuestGroupID = #{ShareGuestGroupID,jdbcType=VARCHAR}
+				WHERE BusinessShopID = #{BusinesShopID}
+		</update>
+		<!-- 以商家对象BusinessShopID非空更新数据库
+			* @param Map            商家对象
+		-->
+		<update id="updateNonEmpty" parameterType="HashMap">
+	  		UPDATE Wifi_BusinessShop
+			    <set>
+						<if test="PassWord!=nulland PassWord!='' ">
+								PassWord = #{PassWord},
+						</if>
+						<if test="BusinesName!=null and BusinesName!='' ">
+								BusinessName = #{BusinesName},
+						</if>
+						<if test="BusinesAddres!=null and BusinesAddres!='' ">
+								BusinessAddres = #{BusinesAddres},
+						</if>
+						<if test="BusinesBoss!=null and BusinesBoss!='' ">
+								BusinessBoss = #{BusinesBoss},
+						</if>
+						<if test="BossMobile!=null and BossMobile!='' ">
+								BossMobile = #{BossMobile},
+						</if>
+						<if test="BusinesContact!=null and BusinesContact!='' ">
+								BusinessContact = #{BusinesContact},
+						</if>
+						<if test="ContactMobile!=null and ContactMobile!='' ">
+								ContactMobile = #{ContactMobile},
+						</if>
+						<if test="BusinesPhone!=null and BusinesPhone!='' ">
+								BusinessPhone = #{BusinesPhone},
+						</if>
+						<if test="BusinesFax!=null and BusinesFax!='' ">
+								BusinessFax = #{BusinesFax},
+						</if>
+						<if test="IndustryID!=null ">
+								IndustryID = #{IndustryID},
+						</if>
+						<if test="NatureID!=null ">
+								BusinessNatureID = #{NatureID},
+						</if>
+						<if test="ProCityID!=null ">
+								ProCityID = #{ProCityID},
+						</if>
+						<if test="AgentID!=null ">
+								AgentID = #{AgentID},
+								BusinessShopID = #{AgentID}+'_'+LoginName,
+						</if>
+						<if test="WifiShare!=null">
+								WifiShare = #{WifiShare},
+						</if>
+						<if test="HomeAddres!=null and HomeAddres!='' ">
+								BusinessHomeAddress = #{HomeAddres},
+						</if>
+						<if test="LogoURL!=null and LogoURL!='' ">
+								LogoURL = #{LogoURL},
+						</if>
+						<if test="AgentGuestGroupID!=null and AgentGuestGroupID!='' ">
+								AgentGuestGroupID = #{AgentGuestGroupID},
+						</if>
+						<if test="ShareGuestGroupID!=null and ShareGuestGroupID!='' ">
+								ShareGuestGroupID = #{ShareGuestGroupID}
+						</if>
+			    </set>
+				WHERE BusinessShopID = #{BusinesShopID}
+		</update>
+		<!-- 删除指定商家
+			* @param String            BusinesShopID
+		-->
+		<delete id="deleteBusinesShop" parameterType="String">
+				DELETE Wifi_BusinesShop WHERE BusinessShopID = #{BusinesShopID}
+		</delete>
+		
+		<!-- 以商家ID取商家数据对象
+			* 
+			* @param BusinesShopID 商家ID
+			* @return BusinesShopResultMap
+		-->
+		<select id="SelectBusinesShopID" parameterType="String" resultMap="BusinesShopResultMap">
+				<include refid="SelectBusinesShopColumn"/>
+				where BusinessShopID = #{BusinesShopID}
+		</select>
+		
+		
+		
+		<!-- 以用户(关注者)ID取所属商家
+			* 
+			* 说明:注意保持各数据ID生成之间的关联
+			* 
+			* @param TerminalID 用户ID
+			* @return BusinesShopResultMap
+		-->
+		<select id="SelectBusinesTerminalID" parameterType="String" resultMap="BusinesShopResultMap">
+				<include refid="SelectBusinesShopColumn"/>
+				where #{TerminalID} like '>'+BusinessShopID+':'
+		</select>
+		
+		
+		
+		
+		<!--取代理商家对象-->
+		<select id="SelectBusinesShopIDAll" resultMap="BusinesShopResultMap">
+				<include refid="SelectBusinesShopColumn"/>
+		</select>
+		
+		
+		<!-- 以代理ID取所属商家数据对象
+			* 
+			* 说明:注意保持各数据ID生成之间的关联
+			* 
+			* @param AgentID 代理ID
+			* @return BusinesShopResultMap
+		-->
+		<select id="SelectAgentID" parameterType="int" resultMap="BusinesShopResultMap">
+				<include refid="SelectBusinesShopColumn"/>
+				where BusinessShopID like LTRIM(STR(#{AgentID})) + '\_%'  escape  '\'
+		</select>
+		
+<!-- *******************************以下代码是web界面功能配置文件，作者：parachuter************************** -->
+		<!-- 以商家登陆名称(LoginName)取所属商家数据对象
+			* 
+			* 
+			* @param LoginName 用户LoginName
+			* @return BusinesShopResultMap
+		-->
+		<select id="SelectLoginName" parameterType="String" resultMap="BusinesShopResultMap">
+				<include refid="SelectBusinesShopColumn"/>
+				where BusinessShopID like '%\_'+#{LoginName} escape '\'
+		</select>
+		<!-- 以代理商ID取代理下商家数量
+			* 
+			* 
+			* @param LoginName 用户LoginName
+			* @return BusinesShopResultMap
+		-->
+		<select id="SelectBusinessShopCountByAgentID" parameterType="int" resultType="int">
+				select count(*) from Wifi_BusinessShop
+				where AgentID=#{AgentID} 
+		</select>
+			
+		
+		
+</mapper>

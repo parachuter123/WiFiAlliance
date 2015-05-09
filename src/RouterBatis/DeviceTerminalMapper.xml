@@ -1,0 +1,112 @@
+<?xml version="1.0" encoding="UTF-8" ?>  
+<!DOCTYPE mapper PUBLIC   "-//mybatis.org//DTD Mapper 3.0//EN"  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="RouterBatis.DeviceTerminalMapper">
+		<!-- 复用sql语句  查询Wifi_WifiModel表所有字段 -->
+		<sql id="SelectDeviceColumn">
+				SELECT	TerminalMac,
+								TerminalBrand,
+								TerminalModel,
+								TerminalSystem,
+								TerminalBrowser,
+								FinalTime,
+								TerminalType,
+								Name,
+								IDNumber,
+								Address,
+								Phone,
+								Weixin,
+								QQ,
+								Remark,
+								TotalUseTime,
+								TotalFlow,
+								LastRouterID,
+								LastVerifyTime
+				FROM Wifi_DeviceTerminal
+		</sql>
+		<!-- BlackWhiteList 对象与数据库的对应关系-->
+		<resultMap id="DeviceResultMap" type="HashMap">
+				<!--constructor>
+						<idArg javaType="String" column="STUDENT_ID"/>
+						<arg javaType="String" column="STUDENT_NAME"/>
+				</constructor-->
+				<id      property="TerminalMac"      column="TerminalMac"      javaType="String"   jdbcType="VARCHAR"/>
+				<result  property="TerminalBrand"    column="TerminalBrand"    javaType="String"   jdbcType="VARCHAR"/>
+				<result  property="TerminalModel"    column="TerminalModel"    javaType="String"   jdbcType="VARCHAR"/>
+				<result  property="TerminalSystem"   column="TerminalSystem"   javaType="String"   jdbcType="VARCHAR"/>
+				<result  property="TerminalBrowser"  column="TerminalBrowser"  javaType="String"   jdbcType="VARCHAR"/>
+				<result  property="FinalTime"        column="FinalTime"        javaType="Date"    jdbcType="TIMESTAMP"/>
+				<result  property="TerminalType"     column="TerminalType"     javaType="int"      jdbcType="INTEGER"/>
+				<result  property="Name"             column="Name"             javaType="String"   jdbcType="VARCHAR"/>
+				<result  property="IDNumber"         column="IDNumber"         javaType="String"   jdbcType="VARCHAR"/>
+				<result  property="Address"          column="Address"          javaType="String"   jdbcType="VARCHAR"/>
+				<result  property="Phone"            column="Phone"            javaType="String"   jdbcType="VARCHAR"/>
+				<result  property="Weixin"           column="Weixin"           javaType="String"   jdbcType="VARCHAR"/>
+				<result  property="QQ"               column="QQ"               javaType="String"   jdbcType="VARCHAR"/>
+				<result  property="Remark"           column="Remark"           javaType="String"   jdbcType="VARCHAR"/>
+				<result  property="TotalUseTime"     column="TotalUseTime"     javaType="int"      jdbcType="INTEGER"/>
+				<result  property="TotalFlow"        column="TotalFlow"        javaType="int"      jdbcType="INTEGER"/>
+				<result  property="LastRouterID"     column="LastRouterID"     javaType="String"   jdbcType="VARCHAR"/>
+				<result  property="LastVerifyTime"   column="LastVerifyTime"   javaType="long"     jdbcType="VARCHAR"/>
+		</resultMap>
+		<!-- 以终端数据对象写入数据库
+			* 
+			* @param TerminalObject 终端数据对象
+			* @return 受影响条数(1)
+		-->
+		<insert id="insertDevice" parameterType="HashMap">
+				INSERT INTO Wifi_DeviceTerminal(TerminalMac,
+										FinalTime)
+				     VALUES(#{TerminalMac},
+										#{FinalTime})
+		</insert>
+		<!-- 更新-->
+		<update id="updateDevice" parameterType="HashMap">
+				UPDATE Wifi_DeviceTerminal
+				    SET TerminalBrand = #{TerminalBrand},
+								TerminalModel = #{TerminalModel},
+								TerminalSystem = #{TerminalSystem},
+								TerminalBrowser = #{TerminalBrowser},
+								FinalTime = #{FinalTime},
+								TerminalType = #{TerminalType},
+								Name = #{Name},
+								IDNumber = #{IDNumber},
+								Address = #{Address},
+								Phone = #{Phone},
+								Weixin = #{Weixin},
+								QQ = #{QQ},
+								Remark = #{Remark},
+								TotalUseTime = #{TotalUseTime},
+								TotalFlow = #{TotalFlow},
+								LastRouterID = #{LastRouterID}
+				WHERE TerminalMac = #{TerminalMac}
+		</update>
+		<!-- 更新取到的QQ号码
+			* 
+			* @param TerminalMac 终端Mac
+			* @param TerminalType 终端Mac
+			* @param QQ 终端Mac
+			* @return 受影响条数(1)
+		-->
+		<update id="updateQqType" parameterType="HashMap">
+				UPDATE Wifi_DeviceTerminal
+				    SET TerminalType = #{TerminalType},
+								QQ = #{QQ}
+				WHERE TerminalMac = #{TerminalMac}
+		</update>
+		<!-- 删除-->
+		<delete id="deleteDeviceMac" parameterType="String">
+				DELETE Wifi_DeviceTerminal WHERE TerminalMac = #{TerminalMac}
+		</delete>
+		
+		
+		
+		<!-- 以终端Mac取终端数据对象
+			* 
+			* @param TerminalMac 终端Mac
+			* @return DeviceResultMap
+		-->
+		<select id="SelectDeviceMac" parameterType="String" resultMap="DeviceResultMap">
+				<include refid="SelectDeviceColumn"/>
+				where TerminalMac = #{TerminalMac}
+		</select>
+</mapper>

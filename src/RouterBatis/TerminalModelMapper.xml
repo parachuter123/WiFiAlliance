@@ -1,0 +1,75 @@
+<?xml version="1.0" encoding="UTF-8" ?>  
+<!DOCTYPE mapper PUBLIC   "-//mybatis.org//DTD Mapper 3.0//EN"  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="RouterBatis.TerminalModelMapper">
+		<!-- 复用sql语句  查询Wifi_WifiModel表所有字段 -->
+		<sql id="SelectModelColumn">
+				SELECT	Model,
+								Brand,
+								FirstPrice,
+								FirstTime,
+								ScreenSize,
+								Resolution,
+								TerminalType,
+								CPUFrequency
+				FROM TerminalModel
+		</sql>
+		<!-- Model 对象与数据库的对应关系-->
+		<resultMap id="ModelResultMap" type="HashMap">
+				<!--constructor>
+						<idArg javaType="String" column="STUDENT_ID"/>
+						<arg javaType="String" column="STUDENT_NAME"/>
+				</constructor-->
+				<id      property="Model"         column="Model"         javaType="String"  jdbcType="VARCHAR"/>
+				<result  property="Brand"         column="Brand"         javaType="String"  jdbcType="VARCHAR"/>
+				<result  property="FirstPrice"    column="FirstPrice"    javaType="int"     jdbcType="INTEGER"/>
+				<result  property="FirstTime"     column="FirstTime"     javaType="Date"    jdbcType="TIMESTAMP"/>
+				<result  property="ScreenSize"    column="ScreenSize"    javaType="int"     jdbcType="INTEGER"/>
+				<result  property="Resolution"    column="Resolution"    javaType="String"  jdbcType="VARCHAR"/>
+				<result  property="TerminalType"  column="TerminalType"  javaType="int"     jdbcType="INTEGER"/>
+				<result  property="CPUFrequency"  column="CPUFrequency"  javaType="int"     jdbcType="INTEGER"/>
+		</resultMap>
+		<!-- 插入-->
+		<insert id="insertModel" parameterType="HashMap">
+				INSERT INTO TerminalModel(Model,
+										Brand,
+										FirstPrice,
+										FirstTime,
+										ScreenSize,
+										Resolution,
+										TerminalType,
+				            CPUFrequency)
+				     VALUES(#{Model},
+										#{Brand},
+										#{FirstPrice},
+										#{FirstTime},
+										#{ScreenSize},
+										#{Resolution},
+										#{TerminalType},
+			              #{CPUFrequency})
+		</insert>
+		<!-- 更新-->
+		<update id="updateModel" parameterType="HashMap">
+				UPDATE FROM TerminalModel
+				    SET Brand = #{Brand},
+				        FirstPrice = #{FirstPrice},
+				        FirstTime = #{FirstTime},
+				        ScreenSize = #{ScreenSize},
+				        Resolution = #{Resolution},
+				        TerminalType = #{TerminalType},
+				        CPUFrequency = #{CPUFrequency}
+				WHERE Model = #{Model};
+		</update>
+		<!-- 删除-->
+		<delete id="deleteModel" parameterType="String">
+				DELETE FROM TerminalModel WHERE Model = #{Model}
+		</delete>
+		
+		<!--以代理ID取代理对象-->
+		<select id="SelectModelAll" resultMap="ModelResultMap">
+				<include refid="SelectModelColumn"/>
+		</select>
+		<select id="SelectModel" parameterType="String" resultMap="ModelResultMap">
+				<include refid="SelectModelColumn"/>
+				where Model=#{Model}
+		</select>
+</mapper>

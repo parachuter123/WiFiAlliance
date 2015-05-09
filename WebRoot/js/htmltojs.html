@@ -1,0 +1,35 @@
+<html>
+	<head>
+	<title>HTML转JavaScript</title>
+	</head>
+	<body>
+		<p align="center">
+			<font style="font-size:18pt;">HTML转换为JS</font><br>请将html代码拷至下面文本框中: <br>
+			<textarea cols="70"id="oSource" onpropertychange="showhideJSTag(change(oSource.value));" rows="10" name="oSource" ></textarea><br>
+			为您生成的JS代码，双击可以复制:(
+			<input name="ShowJSTag" type="checkbox" id="ShowJSTag" onClick="showhideJSTag(change(oSource.value));" value="yes">
+			是否加上Javascript标签)
+		<p align="center">
+		  <textarea cols="70" id="oResult" title="双击复制" ondblclick='this.select();oResult.createTextRange().execCommand("Copy")' rows="10" name="oResult">
+		  </textarea>         
+		   <p align="center"> 
+		   <input type="button" value="清空  " name="B1" onclick="oSource.value='';showhideJSTag(change(oSource.value));" >&nbsp;&nbsp;&nbsp;   
+		   <input type="button" value="预览效果" name="B2" onclick="opentestwin(oResult.value);"><br>
+		  
+		  <script language="JavaScript" >
+			function change(oSourceString){
+			    return("document.writeln(\""+oSourceString.replace(/\\/g,"\\\\").replace(/\//g,"\\/").replace(/\'/g,"\\\'").replace(/\"/g,"\\\"").split('\r\n').join("\");\ndocument.writeln(\"")+"\")"+";");
+			}
+			function  showhideJSTag(strjs){
+				if(ShowJSTag.checked) 
+				oResult.value="<script language=javascript>\n<!--\n"+strjs+"\n//-->\n</"+"script>";
+				else
+				oResult.value=strjs;  
+			} 
+			//http:
+			function opentestwin(str){
+				var testwin=window.open("test","_balnk","toolbar=no,location=no,directories=no,status=yes,menubar=yes,scrollbars=yes,resizable=yes");          testwin.document.write(str);                                  
+			}       
+		</script>
+	</body>
+</html>

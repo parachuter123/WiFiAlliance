@@ -1,0 +1,129 @@
+<?xml version="1.0" encoding="UTF-8" ?>  
+<!DOCTYPE mapper PUBLIC   "-//mybatis.org//DTD Mapper 3.0//EN"  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="RouterBatis.InfoTemplateMapper">
+		<!-- 复用sql语句  查询Wifi_AdInfo表所有字段 -->
+		<sql id="SelectInfoColumn">
+				SELECT	[Key],
+								Name,	
+								Type,
+								Content,
+								Model,
+								Remark,
+								TemplateID,
+								BusinesShopID
+				FROM Wifi_InfoTemplate
+		</sql>
+		<!-- InfoResultMap 参数说明
+			* 
+			* 说明:
+			* 
+			* @param id            模板ID
+			* @param Name           模板名称
+			* @param Type           模板类型			  {浏览器引导:1,关注:2,过期:3,广告通知:4,分享任务:5}
+			* @param Content        模板内容
+			* @param Model          模板内容模式		{直接内容:1,内部模板:2,外部链接:3}
+			* @param Remark         模板说明或备注
+			* @param BusinesShopID  模板所属商家
+			* @return HashMap
+		-->
+		<resultMap id="InfoResultMap" type="HashMap">
+				<id      property="Key"            column="Key"            javaType="String"  jdbcType="VARCHAR"/>
+				<result  property="Name"           column="Name"           javaType="String"  jdbcType="VARCHAR"/>
+				<result  property="Type"           column="Type"           javaType="int"     jdbcType="INTEGER"/>
+				<result  property="Content"        column="Content"        javaType="String"  jdbcType="VARCHAR"/>
+				<result  property="Model"          column="Model"          javaType="int"     jdbcType="INTEGER"/>
+				<result  property="Remark"         column="Remark"         javaType="String"  jdbcType="VARCHAR"/>
+				<result  property="TemplateID"     column="TemplateID"     javaType="int"     jdbcType="INTEGER"/>
+				<result  property="BusinesShopID"  column="BusinesShopID"  javaType="String"  jdbcType="VARCHAR"/>
+		</resultMap>
+		<!-- 插入代理 自动主键-->
+		<insert id="insertInfo" parameterType="HashMap">
+				INSERT INTO Wifi_InfoTemplate([Key],
+										Name,
+										Type,
+										Content,
+										Model,
+										Remark,
+										TemplateID,
+										BusinesShopID)
+				     VALUES(#{BusinesShopID,jdbcType=VARCHAR}+'#'+#{Name,jdbcType=VARCHAR},
+				     	  #{Name,jdbcType=VARCHAR},
+			              #{Type,jdbcType=INTEGER},
+			              #{Content,jdbcType=VARCHAR},
+			              #{Model,jdbcType=INTEGER},
+			              #{Remark,jdbcType=VARCHAR},
+			              #{TemplateID,jdbcType=INTEGER},
+			              #{BusinesShopID,jdbcType=VARCHAR})
+		</insert>
+		<!-- 更新代理信息 -->
+		<update id="updateInfo" parameterType="HashMap">
+				UPDATE Wifi_InfoTemplate
+				    SET Name = #{Name,jdbcType=VARCHAR},
+				        Type = #{Type,jdbcType=INTEGER},
+				        Content = #{Content,jdbcType=VARCHAR},
+				        Model = #{Model,jdbcType=INTEGER},
+				        Remark = #{Remark,jdbcType=VARCHAR},
+				        TemplateID = #{TemplateID,jdbcType=INTEGER},
+				        BusinesShopID = #{BusinesShopID,jdbcType=VARCHAR}
+				WHERE [Key] = #{BusinesShopID,jdbcType=VARCHAR}+'#'+#{Name,jdbcType=VARCHAR}
+		</update>
+		<!-- 删除代理 -->
+		<delete id="deleteInfoID" parameterType="String">
+				DELETE Wifi_InfoTemplate WHERE [Key] = #{Key}
+		</delete>
+		<delete id="deleteShopID" parameterType="String">
+				DELETE Wifi_InfoTemplate WHERE BusinesShopID = #{BusinesShopID}
+		</delete>
+		
+		<!-- 以模板ID获取模板数据对象
+			* 
+			* 说明:
+			* 
+			* @param id 模板ID
+			* @return InfoResultMap
+		-->
+		<select id="SelectKey" parameterType="String" resultMap="InfoResultMap">
+				<include refid="SelectInfoColumn"/>
+				where [Key]=#{Key}
+		</select>
+		<!-- 以模板ID获取模板数据对象
+			* 
+			* 说明:
+			* 
+			* @param id 模板ID
+			* @return InfoResultMap
+		-->
+		<select id="SelectShopID" parameterType="String" resultMap="InfoResultMap">
+				<include refid="SelectInfoColumn"/>
+				where [Key] like #{BusinesShopID}+'#%'
+		</select>
+<!-- *******************************以下代码是web界面功能配置文件，作者：parachuter******************************************* -->
+	    	<!-- 以商家ID获取模板数据对象
+			* 
+			* 说明:
+			* 
+			* @param id 模板ID
+			* @return InfoResultMap
+		-->
+		<select id="WatchTemplate" parameterType="String" resultMap="InfoResultMap">
+				<include refid="SelectInfoColumn"/>
+				where [Key] like #{BusinesShopID}+'#%'
+		</select>
+		<!-- 以商家ID和模板类型获取模板数据对象
+			* 
+			* 说明:
+			* 
+			* @param id 模板ID
+			* @return InfoResultMap
+		-->
+		<select id="ByBusinesShopIDAndTypeGetTemplate" parameterType="HashMap" resultMap="InfoResultMap">
+				<include refid="SelectInfoColumn"/>
+				where [Key] like #{BusinesShopID}+'#%' and Type = #{Type}
+		</select>
+
+
+
+
+
+		
+</mapper>  

@@ -1,0 +1,136 @@
+<?xml version="1.0" encoding="UTF-8" ?>  
+<!DOCTYPE mapper PUBLIC   "-//mybatis.org//DTD Mapper 3.0//EN"  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="RouterBatis.WifiTerminalMapper">
+		<!-- 复用sql语句  查询Wifi_WifiTerminal表所有字段 -->
+		<sql id="SelectTerminalColumn">
+				SELECT	TerminalID,
+								TerminalMac,
+								FollowersID,
+								FinalTime,
+								WifiRouterID
+				FROM Wifi_WifiTerminal
+		</sql>
+		<!-- Terminal 对象与数据库的对应关系-->
+		<resultMap id="TerminalResultMap" type="HashMap">
+				<!--constructor>
+						<idArg javaType="String" column="STUDENT_ID"/>
+						<arg javaType="String" column="STUDENT_NAME"/>
+						<arg javaType="String" column="STUDENT_SEX"/>
+						<arg javaType="Date" column="STUDENT_BIRTHDAY"/>
+				</constructor-->
+				<id      property="TerminalID"    column="TerminalID"    javaType="String"  jdbcType="INTEGER"/>
+				<result  property="TerminalMac"   column="TerminalMac"   javaType="String"  jdbcType="VARCHAR"/>
+				<result  property="FollowersID"   column="FollowersID"   javaType="String"  jdbcType="VARCHAR"/>
+				<result  property="FinalTime"     column="FinalTime"     javaType="Date"    jdbcType="TIMESTAMP"/>
+				<result  property="WifiRouterID"  column="WifiRouterID"  javaType="String"  jdbcType="VARCHAR"/>
+		</resultMap>
+		<!-- 插入代理 自动主键-->
+		<insert id="insertTerminal" parameterType="HashMap">
+				INSERT INTO Wifi_WifiTerminal(TerminalID,
+										TerminalMac,
+										FollowersID,
+										FinalTime,
+										WifiRouterID)
+				     VALUES(#{TerminalMac}+'>'+#{FollowersID},
+										#{TerminalMac},
+										#{FollowersID},
+										#{FinalTime},
+										#{WifiRouterID})
+		</insert>
+		<!-- 更新代理信息 -->
+		<update id="updateTerminal" parameterType="HashMap">
+				UPDATE Wifi_WifiTerminal
+				    SET TerminalMac = #{TerminalMac},
+				        FollowersID = #{FollowersID},
+				        FinalTime = #{FinalTime},
+				        WifiRouterID = #{WifiRouterID},
+				        TerminalID = #{TerminalMac}+'>'+#{FollowersID}
+				WHERE TerminalID = #{TerminalID}
+		</update>
+		<!-- 修复数据
+			* 
+			* 因路由struct msg_head_st::third_id[64]大小限制,Mac在后可能会丢失,所以把Mac换到前面
+			* 
+			* @param TerminalMac    终端Mac
+			* @return 受影响条数(1)
+		-->
+		<update id="updateRepair" parameterType="String">
+				UPDATE Wifi_WifiTerminal
+				    SET TerminalID = TerminalMac+'>'+FollowersID
+				where TerminalID like '%>'+#{TerminalMac}
+		</update>
+		<!-- 删除代理 -->
+		<delete id="deleteTerminalID" parameterType="String">
+				DELETE FROM Wifi_WifiTerminal WHERE TerminalID = #{TerminalID}
+		</delete>
+		<delete id="deleteWifiRouterID" parameterType="String">
+				DELETE FROM Wifi_WifiTerminal WHERE WifiRouterID = #{WifiRouterID}
+		</delete>
+		<delete id="deleteFollowersID" parameterType="String">
+				DELETE FROM Wifi_WifiTerminal WHERE FollowersID like #{FollowersID}
+		</delete>
+		<delete id="deleteTerminalMac" parameterType="String">
+				DELETE FROM Wifi_WifiTerminal WHERE TerminalMac = #{TerminalMac}
+		</delete>
+		
+		
+		<!-- 以终端Mac获取所有绑定数据对象
+			* 
+			* 获终端绑定数据对象
+			* 
+			* @param TerminalMac    终端Mac
+			* @return TerminalResultMap
+		-->
+		<select id="SelectTerminalMac" parameterType="String" resultMap="TerminalResultMap">
+				<include refid="SelectTerminalColumn"/>
+				where TerminalID like #{TerminalMac}+'>%'
+		</select>
+		
+		<!-- 以终端绑定ID获取绑定数据对象
+			* 
+			* 获终端绑定数据对象
+			* 
+			* @param TerminalID    终端绑定ID
+			* @return TerminalResultMap
+		-->
+		<select id="SelectTerminalID" parameterType="String" resultMap="TerminalResultMap">
+				<include refid="SelectTerminalColumn"/>
+				where TerminalID=#{TerminalID}
+		</select>
+		
+		<!-- 取所有代理对象-->
+		<select id="SelectWifiRouterID" parameterType="String" resultMap="TerminalResultMap">
+				<include refid="SelectTerminalColumn"/>
+				where WifiRouterID=#{WifiRouterID}
+		</select>
+		<!-- 以上级代理ID取下级所有代理对象-->
+		<select id="SelectFollowersID" parameterType="Map" resultMap="TerminalResultMap">
+				<include refid="SelectTerminalColumn"/>
+				WHERE FollowersID = #{FollowersID} and TerminalMac = #{TerminalMac}
+		</select>
+		
+<!-- *******************************以下代码是web界面功能配置文件，作者：parachuter****************************************************************** -->
+		<!-- 以商家ID获取通过手机验证码关注数量
+			@param 	Operator 商家ID
+			@return 	int 
+		 -->
+		<select id="SelectPhoneWatch" parameterType="String" resultType="int">
+			select count(*) from Wifi_WifiTerminal where WifiRouterID like #{Operator} + ':%' and ISNUMERIC(FollowersID)=1
+		</select>
+		<!-- 以商家ID获取当日通过手机验证码关注数量
+			@param 	Operator 商家ID
+			@return 	int 
+		 -->
+		<select id="SelectTodayPhoneWatch" parameterType="Map" resultType="int">
+			SELECT count(*) from Wifi_WifiTerminal 
+			WHERE (WifiRouterID like #{Operator} + ':%')  AND (DATEDIFF(hour,FinalTime,GETDATE()) &lt;#{timelength}) and ISNUMERIC(FollowersID)=1
+		</select>
+		<!-- 以路由ID获取当日通过手机验证码关注数量
+			@param 	WifiRouterID 路由ID
+			@return 	int 
+		 -->
+		<select id="SelectWifiRouterIDCount" parameterType="String" resultType="int">
+			select count(*) from Wifi_WifiTerminal where WifiRouterID=#{WifiRouterID} and ISNUMERIC(FollowersID)=1
+		</select>
+				
+</mapper>  

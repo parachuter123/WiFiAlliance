@@ -1,0 +1,59 @@
+<?xml version="1.0" encoding="UTF-8" ?>  
+<!DOCTYPE mapper PUBLIC   "-//mybatis.org//DTD Mapper 3.0//EN"  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="RouterBatis.AppRecordMapper">
+		<!-- 复用sql语句  查询AppRecord表所有字段 -->
+		<sql id="SelectAppRecordColumn">
+				SELECT	AppRecordID,
+								TotalCount,
+								NewCount,
+								CancelCount,
+								ActivityCount
+				FROM AppRecord
+		</sql>
+		<!-- AppRecord 对象与数据库的对应关系-->
+		<resultMap id="AppRecordResultMap" type="HashMap">
+				<!--constructor>
+						<idArg javaType="String" column="STUDENT_ID"/>
+						<arg javaType="String" column="STUDENT_NAME"/>
+						<arg javaType="String" column="STUDENT_SEX"/>
+						<arg javaType="Date" column="STUDENT_BIRTHDAY"/>
+				</constructor-->
+				<id      property="AppRecordID"    column="AppRecordID"    javaType="String"  jdbcType="VARCHAR"/>
+				<result  property="TotalCount"     column="TotalCount"     javaType="int"     jdbcType="INTEGER"/>
+				<result  property="NewCount"       column="NewCount"       javaType="int"     jdbcType="INTEGER"/>
+				<result  property="CancelCount"    column="CancelCount"    javaType="int"     jdbcType="INTEGER"/>
+				<result  property="ActivityCount"  column="ActivityCount"  javaType="int"     jdbcType="INTEGER"/>
+		</resultMap>
+		<!-- 插入代理 自动主键-->
+		<insert id="insertAppRecord" parameterType="HashMap">
+				INSERT INTO AppRecord(AppRecordID,
+										TotalCount,
+										NewCount,
+										CancelCount,
+										ActivityCount)
+				     VALUES(#{AppRecordID},
+			              #{TotalCount},
+			              #{NewCount},
+			              #{CancelCount},
+			              #{ActivityCount}
+		</insert>
+		<!-- 更新代理信息 -->
+		<update id="updateAppRecord" parameterType="HashMap">
+				UPDATE AppRecord
+				    SET TotalCount = #{TotalCount},
+				        NewCount = #{NewCount},
+				        CancelCount = #{CancelCount},
+				        ActivityCount = #{ActivityCount}
+				WHERE AppRecordID = #{AppRecordID};
+		</update>
+		<!-- 删除代理 -->
+		<delete id="deleteAppRecordID" parameterType="String">
+				DELETE FROM AppRecord WHERE AppRecordID = #{AppRecordID}
+		</delete>
+		
+		<!--以代理ID取代理对象-->
+		<select id="SelectAppRecordID" parameterType="String" resultMap="AppRecordResultMap">
+				<include refid="SelectAppRecordColumn"/>
+				where AppRecordID=#{AppRecordID}
+		</select>
+</mapper>  

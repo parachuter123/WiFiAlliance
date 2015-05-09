@@ -1,0 +1,133 @@
+<?xml version="1.0" encoding="UTF-8" ?>  
+<!DOCTYPE mapper PUBLIC   "-//mybatis.org//DTD Mapper 3.0//EN"  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="RouterBatis.ShareTaskMapper">
+		<!-- 复用sql语句  查询Wifi_AdInfo表所有字段 -->
+		<sql id="SelectShareColumn">
+				SELECT	ShareID,
+								Name,
+								ImgUrl,
+								ImgWidth,
+								ImgHeight,
+								LineLink,
+								[Desc],
+								Title,
+								ShareTemplateKey,
+								poiId,
+								poiName,
+								poiAddress,
+								latitude,
+								longitude,
+								BusinessShopID
+				FROM Wifi_ShareTask
+		</sql>
+		<!-- ShareResultMap 参数说明
+			* 
+			* 说明:
+			* 
+			* @param ShareID           分享任务ID
+			* @param Name              分享任务名称
+			* @param ImgUrl            分享图片
+			* @param ImgWidth          图片宽度
+			* @param ImgHeight         图片高度
+			* @param LineLink          分享链接
+			* @param Desc              分享描述
+			* @param Title             分享标题
+			* @param ShareTemplateKey  分享模板
+			* @return HashMap
+		-->
+		<resultMap id="ShareResultMap" type="HashMap">
+				<id      property="ShareID"    column="ShareID"    javaType="int"     jdbcType="INTEGER"/>
+				<result  property="Name"       column="Name"       javaType="String"  jdbcType="VARCHAR"/>
+				<result  property="ImgUrl"     column="ImgUrl"     javaType="String"  jdbcType="VARCHAR"/>
+				<result  property="ImgWidth"   column="ImgWidth"   javaType="int"     jdbcType="INTEGER"/>
+				<result  property="ImgHeight"  column="ImgHeight"  javaType="int"     jdbcType="INTEGER"/>
+				<result  property="LineLink"   column="LineLink"   javaType="String"  jdbcType="VARCHAR"/>
+				<result  property="Desc"       column="Desc"       javaType="String"  jdbcType="VARCHAR"/>
+				<result  property="Title"      column="Title"      javaType="String"  jdbcType="VARCHAR"/>
+				<result  property="ShareTemplateKey"  column="ShareTemplateKey"  javaType="String"  jdbcType="VARCHAR"/>
+				<result  property="poiId"      column="poiId"      javaType="String"  jdbcType="VARCHAR"/>
+				<result  property="poiName"    column="poiName"    javaType="String"  jdbcType="VARCHAR"/>
+				<result  property="poiAddress" column="poiAddress" javaType="String"  jdbcType="VARCHAR"/>
+				<result  property="latitude"   column="latitude"   javaType="float"   jdbcType="FLOAT"/>
+				<result  property="longitude"  column="longitude"  javaType="float"   jdbcType="FLOAT"/>
+				<result  property="BusinesShopID"  column="BusinessShopID"  javaType="String"  jdbcType="VARCHAR"/>
+		</resultMap>
+		<!-- 插入代理 自动主键-->
+		<insert id="insertShare" parameterType="HashMap">
+				INSERT INTO Wifi_ShareTask(Name,
+										ImgUrl,
+										ImgWidth,
+										ImgHeight,
+										LineLink,
+										[Desc],
+										Title,
+										ShareTemplateKey,
+										poiId,
+										poiName,
+										poiAddress,
+										latitude,
+										longitude,
+										BusinessShopID)
+				     VALUES(#{Name,jdbcType=VARCHAR},
+			              #{ImgUrl,jdbcType=VARCHAR},
+			              #{ImgWidth,jdbcType=INTEGER},
+			              #{ImgHeight,jdbcType=INTEGER},
+			              #{LineLink,jdbcType=VARCHAR},
+			              #{Desc,jdbcType=VARCHAR},
+			              #{Title,jdbcType=VARCHAR},
+			              #{ShareTemplateKey,jdbcType=VARCHAR},
+						  #{poiId,jdbcType=VARCHAR},
+						  #{poiName,jdbcType=VARCHAR},
+						  #{poiAddress,jdbcType=VARCHAR},
+						  #{latitude,jdbcType=FLOAT},
+						  #{longitude,jdbcType=FLOAT},
+						  #{BusinesShopID,jdbcType=VARCHAR})
+		</insert>
+		<!-- 更新代理信息 -->
+		<update id="updateShare" parameterType="HashMap">
+				UPDATE Wifi_ShareTask
+				    SET Name = #{Name,jdbcType=VARCHAR},
+				        ImgUrl = #{ImgUrl,jdbcType=VARCHAR},
+				        ImgWidth = #{ImgWidth,jdbcType=INTEGER},
+				        ImgHeight = #{ImgHeight,jdbcType=INTEGER},
+				        LineLink = #{LineLink,jdbcType=VARCHAR},
+				        [Desc] = #{Desc,jdbcType=VARCHAR},
+				        Title = #{Title,jdbcType=VARCHAR},
+				        ShareTemplateKey = #{ShareTemplateKey,jdbcType=VARCHAR},
+				        poiId = #{poiId,jdbcType=VARCHAR},
+				        poiName = #{poiName,jdbcType=VARCHAR},
+				        poiAddress = #{poiAddress,jdbcType=VARCHAR},
+				        latitude = #{latitude,jdbcType=FLOAT},
+				        longitude = #{longitude,jdbcType=FLOAT},
+				        BusinessShopID = #{BusinesShopID,jdbcType=VARCHAR}
+				WHERE ShareID = #{ShareID,jdbcType=VARCHAR}
+		</update>
+		<!-- 删除代理 -->
+		<delete id="deleteShareID" parameterType="String">
+				DELETE Wifi_ShareTask WHERE ShareID = #{ShareID}
+		</delete>
+		
+		<!-- 以模板ID获取模板数据对象
+			* 
+			* 说明:
+			* 
+			* @param ShareID 分享任务ID
+			* @return ShareResultMap
+		-->
+		<select id="SelectShareID" parameterType="String" resultMap="ShareResultMap">
+				<include refid="SelectShareColumn"/>
+				where ShareID=#{ShareID}
+		</select>
+<!-- *******************************以下代码是web界面功能配置文件，作者：parachuter******************************************* -->	
+		<!-- 以商家ID获取模板数据对象
+			* 
+			* 说明:
+			* 
+			* @param ShareID 分享任务ID
+			* @return ShareResultMap
+		-->
+		<select id="SelectBusinessShopID" parameterType="String" resultMap="ShareResultMap">
+				<include refid="SelectShareColumn"/>
+				where BusinessShopID=#{BusinesShopID}
+		</select>
+</mapper>  

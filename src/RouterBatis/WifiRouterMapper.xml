@@ -1,0 +1,487 @@
+﻿<?xml version="1.0" encoding="UTF-8" ?>  
+<!DOCTYPE mapper PUBLIC   "-//mybatis.org//DTD Mapper 3.0//EN"  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="RouterBatis.WifiRouterMapper">
+		
+		<!-- 复用sql语句  查询Wifi_WifiRouter表所有字段 -->
+		<sql id="SelectRouterColumn">
+				SELECT	WifiRouterID,
+								FactoryRouterID,
+								HardID,
+								HardSeq,
+								RouterAddr,
+								RouterCont,
+								RouterTel,
+								RouterDinate,
+								RouterAgents,
+								DevName,
+								AuthSrv,
+								SjSrv,
+								MngSrv,
+								DefRedirect,
+								CsType,
+								UrlData,
+								HeartbeatTime,
+								BusinessShopID,
+								Longitude,
+								Latitude,
+								MaxConnectCount,
+								IntroductionURL,
+								AppEntranceID,
+								WanIp,
+								PortNumber,
+								LoginName,
+								PassWord,
+								TaskID,
+								RouterNotice,
+								BrowseGuide,
+								ComputerGuide,
+								BrowseGuideType
+				FROM Wifi_WifiRouter
+		</sql>
+		<!-- Router 对象与数据库的对应关系-->
+		<resultMap id="RouterResultMap" type="HashMap">
+				<!--constructor>
+						<idArg javaType="String" column="STUDENT_ID"/>
+						<arg javaType="String" column="STUDENT_NAME"/>
+						<arg javaType="String" column="STUDENT_SEX"/>
+						<arg javaType="Date" column="STUDENT_BIRTHDAY"/>
+				</constructor-->
+				<!--主键长度增加为200-->
+				<id      property="WifiRouterID"     column="WifiRouterID"     javaType="String"   jdbcType="VARCHAR"/>
+				<result  property="FactoryRouterID"  column="FactoryRouterID"  javaType="long"     jdbcType="BIGINT"/>
+				<result  property="HardID"           column="HardID"           javaType="long"     jdbcType="BIGINT"/>
+				<result  property="HardSeq"          column="HardSeq"          javaType="String"   jdbcType="VARCHAR"/>
+				<result  property="RouterAddr"       column="RouterAddr"       javaType="String"   jdbcType="VARCHAR"/>
+				<result  property="RouterCont"       column="RouterCont"       javaType="String"   jdbcType="VARCHAR"/>
+				<result  property="RouterTel"        column="RouterTel"        javaType="String"   jdbcType="VARCHAR"/>
+				<result  property="RouterDinate"     column="RouterDinate"     javaType="String"   jdbcType="VARCHAR"/>
+				<result  property="RouterAgents"     column="RouterAgents"     javaType="String"   jdbcType="VARCHAR"/>
+				<result  property="DevName"          column="DevName"          javaType="String"   jdbcType="VARCHAR"/>
+				<result  property="AuthSrv"          column="AuthSrv"          javaType="String"   jdbcType="VARCHAR"/>
+				<result  property="SjSrv"            column="SjSrv"            javaType="String"   jdbcType="VARCHAR"/>
+				<result  property="MngSrv"           column="MngSrv"           javaType="String"   jdbcType="VARCHAR"/>
+				<result  property="DefRedirect"      column="DefRedirect"      javaType="String"   jdbcType="VARCHAR"/>
+				<result  property="CsType"           column="CsType"           javaType="int"      jdbcType="INTEGER"/>
+				<result  property="UrlData"          column="UrlData"          javaType="String"   jdbcType="VARCHAR"/>
+				<result  property="HeartbeatTime"    column="HeartbeatTime"    javaType="int"      jdbcType="VARCHAR"/>
+				<result  property="Longitude"        column="Longitude"        javaType="Double"   jdbcType="DOUBLE"/>
+				<result  property="Latitude"         column="Latitude"         javaType="Double"   jdbcType="DOUBLE"/>
+				<result  property="MaxConnectCount"  column="MaxConnectCount"  javaType="int"      jdbcType="INTEGER"/>
+				<result  property="IntroductionURL"  column="IntroductionURL"  javaType="String"   jdbcType="VARCHAR"/>
+				<result  property="AppEntranceID"    column="AppEntranceID"    javaType="String"   jdbcType="VARCHAR"/>
+				<result  property="WanIp"            column="WanIp"            javaType="String"   jdbcType="VARCHAR"/>
+				<result  property="PortNumber"       column="PortNumber"       javaType="int"      jdbcType="INTEGER"/>
+				<result  property="LoginName"        column="LoginName"        javaType="String"   jdbcType="VARCHAR"/>
+				<result  property="PassWord"         column="PassWord"         javaType="String"   jdbcType="VARCHAR"/>
+				<result  property="TaskID"          column="TaskID"           javaType="int"      jdbcType="INTEGER"/>
+				<result  property="RouterNotice"     column="RouterNotice"     javaType="String"   jdbcType="VARCHAR"/>
+				<result  property="BusinesShopID"    column="BusinessShopID"   javaType="String"   jdbcType="VARCHAR"/>
+				
+				<result  property="BrowseGuide"  column="BrowseGuide"  javaType="String"  jdbcType="VARCHAR"/>
+				<result  property="ComputerGuide"    column="ComputerGuide"    javaType="String"   jdbcType="VARCHAR"/>
+				<result  property="BrowseGuideType"     column="BrowseGuideType"   javaType="String"   jdbcType="VARCHAR"/>
+		</resultMap>
+		<!-- 插入代理 自动主键-->
+		<insert id="insertRouter" parameterType="HashMap">
+				INSERT INTO Wifi_WifiRouter(WifiRouterID,
+										FactoryRouterID,
+										HardID,
+										HardSeq,
+										RouterAddr,
+										RouterCont,
+										RouterTel,
+										RouterDinate,
+										RouterAgents,
+										DevName,
+										AuthSrv,
+										SjSrv,
+										MngSrv,
+										DefRedirect,
+										CsType,
+										UrlData,
+										HeartbeatTime,
+										BusinessShopID,
+										Longitude,
+										Latitude,
+										MaxConnectCount,
+										IntroductionURL,
+										AppEntranceID,
+										WanIp,
+										PortNumber,
+										LoginName,
+										PassWord,
+										TaskID,
+										RouterNotice,
+										BrowseGuide,
+										ComputerGuide,
+										BrowseGuideType)
+				     VALUES(#{BusinesShopID,jdbcType=VARCHAR}+'>'+#{DevName,jdbcType=VARCHAR}+'.'+#{HardSeq,jdbcType=VARCHAR}+':'+LTRIM(STR(#{FactoryRouterID,jdbcType=BIGINT})),
+										#{FactoryRouterID,jdbcType=BIGINT},
+										#{HardID,jdbcType=BIGINT},
+										#{HardSeq,jdbcType=VARCHAR},
+										#{RouterAddr,jdbcType=VARCHAR},
+										#{RouterCont,jdbcType=VARCHAR},
+										#{RouterTel,jdbcType=VARCHAR},
+										#{RouterDinate,jdbcType=VARCHAR},
+										#{RouterAgents,jdbcType=VARCHAR},
+										#{DevName,jdbcType=VARCHAR},
+										#{AuthSrv,jdbcType=VARCHAR},
+										#{SjSrv,jdbcType=VARCHAR},
+										#{MngSrv,jdbcType=VARCHAR},
+										#{DefRedirect,jdbcType=VARCHAR},
+										#{CsType,jdbcType=INTEGER},
+										#{UrlData,jdbcType=VARCHAR},
+										#{HeartbeatTime,jdbcType=VARCHAR},
+										#{BusinesShopID,jdbcType=VARCHAR},
+										#{Longitude,jdbcType=DOUBLE},
+										#{Latitude,jdbcType=DOUBLE},
+										#{MaxConnectCount,jdbcType=INTEGER},
+										#{IntroductionURL,jdbcType=VARCHAR},
+										#{AppEntranceID,jdbcType=VARCHAR},
+										#{WanIp,jdbcType=VARCHAR},
+										#{PortNumber,jdbcType=INTEGER},
+										#{LoginName,jdbcType=VARCHAR},
+										#{PassWord,jdbcType=VARCHAR},
+										#{TaskID,jdbcType=INTEGER},
+										#{RouterNotice,jdbcType=VARCHAR},
+										#{BrowseGuide,jdbcType=VARCHAR},
+										#{ComputerGuide,jdbcType=VARCHAR},
+										#{BrowseGuideType,jdbcType=VARCHAR})
+		</insert>
+		<!-- 以路由数据对象更新数据库
+			* 以对象为准更新数据库
+			* 
+			* 注意:多线程更新可能丢失数据或数据混乱
+			* 
+			* @param RouterObject 路由数据对象
+			* @return 受影响条数(1)
+		-->
+		<update id="updateRouter" parameterType="HashMap">
+				UPDATE Wifi_WifiRouter
+				    SET FactoryRouterID = #{FactoryRouterID,jdbcType=BIGINT},
+								HardID = #{HardID,jdbcType=BIGINT},
+								HardSeq = #{HardSeq,jdbcType=VARCHAR},
+								RouterAddr = #{RouterAddr,jdbcType=VARCHAR},
+								RouterCont = #{RouterCont,jdbcType=VARCHAR},
+								RouterTel = #{RouterTel,jdbcType=VARCHAR},
+								RouterDinate = #{RouterDinate,jdbcType=VARCHAR},
+								RouterAgents = #{RouterAgents,jdbcType=VARCHAR},
+								DevName = #{DevName,jdbcType=VARCHAR},
+								AuthSrv = #{AuthSrv,jdbcType=VARCHAR},
+								SjSrv = #{SjSrv,jdbcType=VARCHAR},
+								MngSrv = #{MngSrv,jdbcType=VARCHAR},
+								DefRedirect = #{DefRedirect,jdbcType=VARCHAR},
+								CsType = #{CsType,jdbcType=INTEGER},
+								UrlData = #{UrlData,jdbcType=VARCHAR},
+								HeartbeatTime = #{HeartbeatTime,jdbcType=VARCHAR},
+								BusinessShopID = #{BusinesShopID,jdbcType=VARCHAR},
+								Longitude = #{Longitude,jdbcType=DOUBLE},
+								Latitude = #{Latitude,jdbcType=DOUBLE},
+								MaxConnectCount = #{MaxConnectCount,jdbcType=VARCHAR},
+								IntroductionURL = #{IntroductionURL,jdbcType=VARCHAR},
+								AppEntranceID = #{AppEntranceID,jdbcType=VARCHAR},
+								WanIp = #{WanIp,jdbcType=VARCHAR},
+								PortNumber = #{PortNumber,jdbcType=INTEGER},
+								LoginName = #{LoginName,jdbcType=VARCHAR},
+								PassWord = #{PassWord,jdbcType=VARCHAR},
+								TaskID = #{TaskID,jdbcType=INTEGER},
+								RouterNotice = #{RouterNotice,jdbcType=VARCHAR},
+								BrowseGuide = #{BrowseGuide,jdbcType=VARCHAR},
+								ComputerGuide = #{ComputerGuide,jdbcType=VARCHAR},
+								BrowseGuideType = #{BrowseGuideType,jdbcType=VARCHAR},
+								WifiRouterID = #{BusinesShopID,jdbcType=VARCHAR}+'>'+#{DevName,jdbcType=VARCHAR}+'.'+#{HardSeq,jdbcType=VARCHAR}+':'+LTRIM(STR(#{FactoryRouterID,jdbcType=BIGINT}))
+				WHERE WifiRouterID = #{WifiRouterID}
+		</update>
+		<!-- 以路由对象WifiRouterID非空更新数据库
+			* @param Map            路由对象
+		-->
+		<update id="updateNonEmpty" parameterType="HashMap">
+				UPDATE Wifi_WifiRouter
+			    <set>
+						<if test="FactoryRouterID!=null ">
+								FactoryRouterID = #{FactoryRouterID},
+						</if>
+						<if test="HardID!=null ">
+								HardID = #{HardID},
+						</if>
+						<if test="HardSeq!=null ">
+								HardSeq = #{HardSeq},
+						</if>
+						<if test="RouterAddr!=null">
+								RouterAddr = #{RouterAddr},
+						</if>
+						<if test="RouterCont!=null ">
+								RouterCont = #{RouterCont},
+						</if>
+						<if test="RouterTel!=null ">
+								RouterTel = #{RouterTel},
+						</if>
+						<if test="RouterDinate!=null ">
+								RouterDinate = #{RouterDinate},
+						</if>
+						<if test="RouterAgents!=null ">
+								RouterAgents = #{RouterAgents},
+						</if>
+						<if test="DevName!=null ">
+								DevName = #{DevName},
+						</if>
+						<if test="AuthSrv!=null ">
+								AuthSrv = #{AuthSrv},
+						</if>
+						<if test="SjSrv!=null ">
+								SjSrv = #{SjSrv},
+						</if>
+						<if test="MngSrv!=null ">
+								MngSrv = #{MngSrv},
+						</if>
+						<if test="DefRedirect!=null ">
+								DefRedirect = #{DefRedirect},
+						</if>
+						<if test="CsType!=null ">
+								CsType = #{CsType},
+						</if>
+						<if test="UrlData!=null ">
+								UrlData = #{UrlData},
+						</if>
+						<if test="HeartbeatTime!=null ">
+								HeartbeatTime = #{HeartbeatTime},
+						</if>
+						<if test="BusinessShopID!=null ">
+								BusinessShopID = #{BusinesShopID},
+						</if>
+						<if test="Longitude!=null ">
+								Longitude = #{Longitude},
+						</if>
+						<if test="Latitude!=null ">
+								Latitude = #{Latitude},
+						</if>
+						<if test="MaxConnectCount!=null ">
+								MaxConnectCount = #{MaxConnectCount},
+						</if>
+						<if test="IntroductionURL!=null ">
+								IntroductionURL = #{IntroductionURL},
+						</if>
+						<if test="AppEntranceID!=null ">
+								AppEntranceID = #{AppEntranceID},
+						</if>
+						<if test="WanIp!=null ">
+								WanIp = #{WanIp},
+						</if>
+						<if test="PortNumber!=null ">
+								PortNumber = #{PortNumber},
+						</if>
+						<if test="LoginName!=null ">
+								LoginName = #{LoginName},
+						</if>
+						<if test="PassWord!=null ">
+								PassWord = #{PassWord},
+						</if>
+						<if test="TaskID!=null ">
+								TaskID = #{TaskID},
+						</if>
+						<if test="RouterNotice!=null ">
+								RouterNotice = #{RouterNotice},
+						</if>
+						<if test="BrowseGuide!=null ">
+								BrowseGuide = #{BrowseGuide},
+						</if>
+						<if test="BusinesShopID!=null and DevName!=null and HardSeq!=null and FactoryRouterID!=null">
+								WifiRouterID = #{BusinesShopID}+'>'+#{DevName}+'.'+#{HardSeq}+':'+LTRIM(STR(#{FactoryRouterID}))
+						</if>
+			    </set>
+				WHERE WifiRouterID = #{WifiRouterID};
+		</update>
+		<!-- 删除代理 -->
+		<delete id="deleteRouterID" parameterType="String">
+				DELETE FROM Wifi_WifiRouter WHERE WifiRouterID = #{WifiRouterID}
+		</delete>
+		<delete id="deleteShopID" parameterType="String">
+				DELETE FROM Wifi_WifiRouter WHERE BusinessShopID = #{BusinesShopID}
+		</delete>
+		<delete id="deleteEntranceID" parameterType="String">
+				DELETE FROM Wifi_WifiRouter WHERE AppEntranceID = #{AppEntranceID}
+		</delete>
+		<delete id="deleteHardSeq" parameterType="String">
+				DELETE FROM Wifi_WifiRouter WHERE WifiRouterID like '%.'+#{HardSeq}+':%'
+		</delete>
+		
+		<!-- 以受权码取得路由数据对象
+			* 商家首先创建一个路由,生成一个受权码(AuthorizeCode),安装路由设置的时候把此受权码填入:导航条==>WANWIFI==>基本设置(单击)==>设备名称
+			* 
+			* 路由连接认证服务器时,以受权码(AuthorizeCode)为参数,调用当前id=SelectAuthorizeCode,取得路由数据对象
+			* 
+			* @param AuthorizeCode(DevName) 受权码
+			* @return RouterResultMap
+		-->
+		<select id="SelectRouterIDCode" parameterType="HashMap" resultMap="RouterResultMap">
+				<include refid="SelectRouterColumn"/>
+				where WifiRouterID like '%>'+#{DevName}+'.%:'+LTRIM(STR(#{FactoryRouterID,jdbcType=BIGINT}))
+		</select>
+		<!-- 以受权码取得路由数据对象
+			* 商家首先创建一个路由,生成一个受权码(AuthorizeCode),安装路由设置的时候把此受权码填入:导航条==>WANWIFI==>基本设置(单击)==>设备名称
+			* 
+			* 路由连接认证服务器时,以受权码(AuthorizeCode)为参数,调用当前id=SelectAuthorizeCode,取得路由数据对象
+			* 
+			* @param AuthorizeCode(DevName) 受权码
+			* @return RouterResultMap
+		-->
+		<select id="SelectDevName" parameterType="String" resultMap="RouterResultMap">
+				<include refid="SelectRouterColumn"/>
+				where WifiRouterID like '%>'+#{AuthorizeCode}+'.:'
+		</select>
+		
+		<!-- 以路由序列号获取路由数据对象
+			* 
+			* 注意:理论上一个序列号只有一条数据
+			* 
+			* @param HardSeq          设备序列号
+			* @return RouterResultMap
+		-->
+		<select id="SelectHardSeq" parameterType="String" resultMap="RouterResultMap">
+				<include refid="SelectRouterColumn"/>
+				where HardSeq = #{HardSeq}
+		</select>
+		
+		<!-- 以厂家路由ID获取路由数据对象
+			* 
+			* 注意:兼容性过度
+			* 
+			* @param FactoryRouterID          厂家路由ID
+			* @return RouterResultMap
+		-->
+		<select id="SelectFactoryRouterID" parameterType="long" resultMap="RouterResultMap">
+				<include refid="SelectRouterColumn"/>
+				where WifiRouterID like '%:'+LTRIM(STR(#{FactoryRouterID}))
+		</select>		
+		
+		<!--以代理ID取代理对象-->
+		<select id="SelectRouterID" parameterType="String" resultMap="RouterResultMap">
+				<include refid="SelectRouterColumn"/>
+				where WifiRouterID = #{WifiRouterID}
+		</select>
+		<!-- 取所有代理对象-->
+		<select id="SelectShopID" parameterType="String" resultMap="RouterResultMap">
+				<include refid="SelectRouterColumn"/>
+				where WifiRouterID like #{BusinesShopID}+'.%'
+		</select>
+		
+		
+		
+		<!-- 以上级代理ID取下级所有代理对象-->
+		<select id="SelectRouterAll" resultMap="RouterResultMap">
+				<include refid="SelectRouterColumn"/>
+		</select>
+<!-- *******************************以下代码是web界面功能配置文件，作者：Ronan****************************************************************** -->
+		<!-- 以代理ID获取路由数据对象
+			* 
+			* 注意：商家ID生成规则：代理ID_商家名称
+			* 
+			* @param BusinessShopID          
+			* @return RouterResultMap
+		-->
+		<select id="SelectAgentID" parameterType="int" resultMap="RouterResultMap">
+				<include refid="SelectRouterColumn"/>
+				where BusinessShopID like LTRIM(STR(#{AgentID}))+'_%'
+		</select>
+		<!-- 以商家ID获取路由数据对象
+			* 
+			* 注意：商家ID生成规则：代理ID_商家名称
+			* 
+			* @param BusinessShopID          
+			* @return RouterResultMap
+		-->
+		<select id="SelectBussessShopID" parameterType="String" resultMap="RouterResultMap">
+				<include refid="SelectRouterColumn"/>
+				where BusinessShopID like #{BussessShopID}
+		</select>
+		<!-- 以商家ID获取路由数据对象数量
+			* 
+			* 注意：商家ID生成规则：代理ID_商家名称
+			* 
+			* @param BusinessShopID          
+			* @return int
+		-->
+		<select id="SelectWifiRouterCountByBusiID" parameterType="String" resultType="int">
+				select count(*) FROM Wifi_WifiRouter
+				where BusinessShopID like #{BusinessShopID}
+		</select>
+		<!-- 以代理ID获取路由数据对象数量
+			* 
+			* 注意：商家ID生成规则：代理ID_商家名称
+			* 
+			* @param BusinessShopID          
+			* @return int
+		-->
+		<select id="SelectWifiRouterCountByAgentID" parameterType="String" resultType="int">
+				select count(*) FROM Wifi_WifiRouter
+				where BusinessShopID like #{AgentID} + '_%'
+		</select>
+		<!-- 以代理ID获取路由数据对象
+			* 
+			* 注意：商家ID生成规则：代理ID_商家名称
+			* 
+			* @param BusinessShopID          
+			* @return int
+		-->
+		<select id="SelectWifiRouterByAgentID" parameterType="String" resultMap="RouterResultMap">
+				<include refid="SelectRouterColumn"/>
+				where BusinessShopID like LTRIM(STR(#{AgentID})) + '_%'
+		</select>
+		<!-- 获取路由数据对象总数量
+			* 
+			* 注意：商家ID生成规则：代理ID_商家名称
+			* 
+			* @param BusinessShopID          
+			* @return RouterResultMap
+		-->
+		<select id="SelectWifiRouterCount" resultType="int">
+				select count(*) FROM Wifi_WifiRouter
+		</select>
+		<!-- 商户新建路由
+			* 
+			* 注意：WifiRouterID 生成规则  	     商家ID>设备名称.硬件序列号:出厂路由ID
+			*                                 BusinesShopID>DevName.HardSeq:FactoryRouterID
+			* 
+			* @param BusinessShopID          
+			* @return RouterResultMap
+		-->
+		<insert id="insertRouterByBussess" parameterType="HashMap">
+				INSERT INTO Wifi_WifiRouter(WifiRouterID,
+										FactoryRouterID,
+										HardSeq,
+										RouterAddr,
+										RouterCont,
+										RouterTel,
+										DevName,
+										BusinessShopID,
+										AppEntranceID,
+										Longitude,
+										Latitude,
+										AuthSrv,
+										SjSrv,
+										DefRedirect,
+										CsType,
+										UrlData,
+										HeartbeatTime)
+				     VALUES(#{BusinesShopID,jdbcType=VARCHAR}+'>'+#{DevName,jdbcType=VARCHAR}+'.'+#{HardSeq,jdbcType=VARCHAR}+':'+LTRIM(STR(#{FactoryRouterID,jdbcType=BIGINT})),
+										#{FactoryRouterID,jdbcType=BIGINT},
+										#{HardSeq,jdbcType=VARCHAR},
+										#{RouterAddr,jdbcType=VARCHAR},
+										#{RouterCont,jdbcType=VARCHAR},
+										#{RouterTel,jdbcType=VARCHAR},
+										#{DevName,jdbcType=VARCHAR},
+										#{BusinesShopID,jdbcType=VARCHAR},
+										#{AppEntranceID,jdbcType=VARCHAR},
+										#{Longitude,jdbcType=DOUBLE},
+										#{Latitude,jdbcType=DOUBLE},
+										#{AuthSrv,jdbcType=VARCHAR},
+										#{SjSrv,jdbcType=VARCHAR},
+										#{DefRedirect,jdbcType=VARCHAR},
+										#{CsType,jdbcType=INTEGER},
+										#{UrlData,jdbcType=VARCHAR},
+										#{HeartbeatTime,jdbcType=VARCHAR})
+		</insert>	
+
+
+
+</mapper>  

@@ -1,0 +1,192 @@
+<?xml version="1.0" encoding="UTF-8" ?>  
+<!DOCTYPE mapper PUBLIC   "-//mybatis.org//DTD Mapper 3.0//EN"  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="RouterBatis.FollowersMapper">
+		<!-- 复用sql语句  查询Wifi_Followers表所有字段 -->
+		<sql id="SelectFollowersColumn">
+				SELECT	FollowersID,
+								FansID,
+								Nickname,
+								AvatarURL,
+								Sex,
+								Country,
+								Province,
+								City,
+								Language,
+								SubscribeTime,
+								StatusID,
+								GroupID,
+								InitiativeNewsTime,
+								EndLatitude,
+								EndLongitude,
+								Fakeid,
+								AppEntranceID
+				FROM Wifi_Followers
+		</sql>
+		<!-- Followers 对象与数据库的对应关系-->
+		<resultMap id="FollowersResultMap" type="HashMap">
+				<!--constructor>
+						<idArg javaType="String" column="STUDENT_ID"/>
+						<arg javaType="String" column="STUDENT_NAME"/>
+						<arg javaType="String" column="STUDENT_SEX"/>
+						<arg javaType="Date" column="STUDENT_BIRTHDAY"/>
+				</constructor-->
+				<id      property="FollowersID"         column="FollowersID"         javaType="String"  jdbcType="VARCHAR"/>
+				<result  property="FansID"              column="FansID"              javaType="String"  jdbcType="VARCHAR"/>
+				<result  property="Nickname"            column="Nickname"            javaType="String"  jdbcType="VARCHAR"/>
+				<result  property="AvatarURL"           column="AvatarURL"           javaType="String"  jdbcType="VARCHAR"/>
+				<result  property="Sex"                 column="Sex"                 javaType="Boolean" jdbcType="BIT"/>
+				<result  property="Country"             column="Country"             javaType="String"  jdbcType="VARCHAR"/>
+				<result  property="Province"            column="Province"            javaType="String"  jdbcType="VARCHAR"/>
+				<result  property="City"                column="City"                javaType="String"  jdbcType="VARCHAR"/>
+				<result  property="Language"            column="Language"            javaType="String"  jdbcType="VARCHAR"/>
+				<result  property="SubscribeTime"       column="SubscribeTime"       javaType="Date"    jdbcType="TIMESTAMP"/>
+				<result  property="StatusID"            column="StatusID"            javaType="int"     jdbcType="INTEGER"/>
+				<result  property="GroupID"             column="GroupID"             javaType="String"  jdbcType="VARCHAR"/>
+				<result  property="InitiativeNewsTime"  column="InitiativeNewsTime"  javaType="Date"    jdbcType="TIMESTAMP"/>
+				<result  property="EndLatitude"         column="EndLatitude"         javaType="Double"  jdbcType="FLOAT"/>
+				<result  property="EndLongitude"        column="EndLongitude"        javaType="Double"  jdbcType="FLOAT"/>
+				<result  property="Fakeid"              column="Fakeid"              javaType="String"  jdbcType="VARCHAR"/>
+				<result  property="AppEntranceID"       column="AppEntranceID"       javaType="String"  jdbcType="VARCHAR"/>
+		</resultMap>
+		<!-- 插入代理 自动主键-->
+		<insert id="insertFollowers" parameterType="HashMap">
+				INSERT INTO Wifi_Followers(FollowersID,
+										FansID,
+										Nickname,
+										AvatarURL,
+										Sex,
+										Country,
+										Province,
+										City,
+										Language,
+										SubscribeTime,
+										StatusID,
+										GroupID,
+										InitiativeNewsTime,
+										EndLatitude,
+										EndLongitude,
+										Fakeid,
+										AppEntranceID)
+				     VALUES(#{AppEntranceID}+';'+#{FansID},
+										#{FansID},
+										#{Nickname},
+										#{AvatarURL},
+										#{Sex},
+										#{Country},
+										#{Province},
+										#{City},
+										#{Language},
+										#{SubscribeTime},
+										#{StatusID},
+										#{GroupID},
+										#{InitiativeNewsTime},
+										#{EndLatitude},
+										#{EndLongitude},
+										#{Fakeid},
+										#{AppEntranceID})
+		</insert>
+		<!-- 更新代理信息 -->
+		<update id="updateFollowers" parameterType="HashMap">
+				UPDATE Wifi_Followers
+				    SET FansID = #{FansID},
+								Nickname = #{Nickname},
+								AvatarURL = #{AvatarURL},
+								Sex = #{Sex},
+								Country = #{Country},
+								Province = #{Province},
+								City = #{City},
+								Language = #{Language},
+								SubscribeTime = #{SubscribeTime},
+								StatusID = #{StatusID},
+								GroupID = #{GroupID},
+								InitiativeNewsTime = #{InitiativeNewsTime},
+								EndLatitude = #{EndLatitude},
+								EndLongitude = #{EndLongitude},
+								Fakeid = #{Fakeid},
+								AppEntranceID = #{AppEntranceID}
+				WHERE FollowersID = #{FollowersID};
+		</update>
+		<!-- 删除代理 -->
+		<delete id="deleteFollowersID" parameterType="String">
+				DELETE FROM Wifi_Followers WHERE FollowersID = #{FollowersID}
+		</delete>
+		<delete id="deleteAppEntranceID" parameterType="String">
+				DELETE FROM Wifi_Followers WHERE FollowersID like #{AppEntranceID}+';%'
+		</delete>
+		
+		<!-- 关注者ID获取数据对象
+			* 
+			* 获取关注者数据对象
+			* 
+			* @param FollowersID    关注者ID
+			* @return FollowersResultMap
+		-->
+		<select id="SelectFollowersID" parameterType="String" resultMap="FollowersResultMap">
+				<include refid="SelectFollowersColumn"/>
+				where FollowersID=#{FollowersID}
+		</select>
+		
+		<!-- 关注者(FansID)ID和AppEntranceID获取关注者数据对象
+			* 
+			* 获取关注者数据对象
+			* 
+			* @param FansID    				粉丝ID
+			* @param AppEntranceID    关注接口ID
+			* @return FollowersResultMap
+		-->
+		<select id="SelectOpenID" parameterType="Map" resultMap="FollowersResultMap">
+				<include refid="SelectFollowersColumn"/>
+				where FollowersID = #{AppEntranceID}+';'+#{FansID}
+		</select>
+		
+		
+		<!-- 取所有代理对象-->
+		<select id="SelectAppEntranceID" parameterType="String" resultMap="FollowersResultMap">
+				<include refid="SelectFollowersColumn"/>
+				WHERE FollowersID like #{AppEntranceID}+';%'
+		</select>
+		
+		
+<!-- *******************************以下代码是web界面功能配置文件，作者：parachuter************************** -->
+		<select id="SelectCount" parameterType="HashMap" resultType="int">
+				SELECT count(*) FROM Wifi_Followers
+				<where>
+					<if test="AppEntranceID != null">
+						FollowersID like #{AppEntranceID}+';%'
+					</if>
+					<if test="AppEntranceID == null">
+						FollowersID is null
+					</if>
+					<if test="NickName != null">
+						and NickName like '%'+#{NickName}+'%'
+					</if>
+					<if test="GroupID != null">
+						and GroupID = #{GroupID}
+					</if>
+					<if test="StatusID != null">
+						and StatusID = #{StatusID}
+					</if>
+				</where>
+		</select>
+		<select id="SelectFollowers" parameterType="HashMap" resultMap="FollowersResultMap">
+				<include refid="SelectFollowersColumn"/>
+				<where>
+					<if test="AppEntranceID != null">
+						FollowersID like #{AppEntranceID}+';%'
+					</if>
+					<if test="AppEntranceID == null">
+						FollowersID is null
+					</if>
+					<if test="NickName != null">
+						and NickName like '%'+#{NickName}+'%'
+					</if>
+					<if test="GroupID != null">
+						and GroupID = #{GroupID}
+					</if>
+					<if test="StatusID != null">
+						and StatusID = #{StatusID}
+					</if>
+				</where>
+		</select>
+		
+</mapper>  

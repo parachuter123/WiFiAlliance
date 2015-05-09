@@ -1,0 +1,138 @@
+<?xml version="1.0" encoding="UTF-8" ?>  
+<!DOCTYPE mapper PUBLIC   "-//mybatis.org//DTD Mapper 3.0//EN"  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="RouterBatis.AgentMapper">
+		<!-- 复用sql语句  查询Wifi_WifiAgent表所有字段 -->
+		<sql id="SelectAgentColumn">
+				SELECT	AgentID,
+								LoginName,
+								PassWord,
+								AgentName,
+								SeniorAgent,
+								WifiShare,
+								SuperiorAgentID,
+								RouterAgentsID,
+								LogoUrl,
+								SeniorAgentTitle,
+								SeniorAgentInstruction,
+								SeniorAgentFooter,
+								JumpAddr
+				FROM Wifi_WifiAgent
+		</sql>
+		<!-- Agent 对象与数据库的对应关系-->
+		<resultMap id="AgentResultMap" type="HashMap">
+				<!--constructor>
+						<idArg javaType="String" column="STUDENT_ID"/>
+						<arg javaType="String" column="STUDENT_NAME"/>
+						<arg javaType="String" column="STUDENT_SEX"/>
+						<arg javaType="Date" column="STUDENT_BIRTHDAY"/>
+				</constructor-->
+				<id      property="AgentID"       column="AgentID"          javaType="int"     jdbcType="INTEGER"/>
+				<result  property="LoginName"     column="LoginName"        javaType="String"  jdbcType="VARCHAR"/>
+				<result  property="PassWord"      column="PassWord"         javaType="String"  jdbcType="VARCHAR"/>
+				<result  property="AgentName"     column="AgentName"        javaType="String"  jdbcType="VARCHAR"/>
+				<result  property="SeniorAgent"   column="SeniorAgent"      javaType="Boolean" jdbcType="BIT"/>
+				<result  property="WifiShare"     column="WifiShare"        javaType="Boolean" jdbcType="BIT"/>
+				<result  property="SuperAgentID"  column="SuperiorAgentID"  javaType="int"     jdbcType="INTEGER"/>
+				<result  property="RouterAgentID" column="RouterAgentsID"   javaType="int"     jdbcType="INTEGER"/>
+				
+				<result  property="LogoUrl" column="LogoUrl"   javaType="String"     jdbcType="VARCHAR"/>
+				<result  property="SeniorAgentTitle" column="SeniorAgentTitle"   javaType="String"     jdbcType="VARCHAR"/>
+				<result  property="SeniorAgentInstruction" column="SeniorAgentInstruction"   javaType="String"     jdbcType="VARCHAR"/>
+				<result  property="SeniorAgentFooter" column="SeniorAgentFooter"   javaType="String"     jdbcType="VARCHAR"/>
+				<result  property="JumpAddr" column="JumpAddr"   javaType="String"     jdbcType="VARCHAR"/>
+		</resultMap>
+		<!-- 插入代理 自动主键-->
+		<insert id="insertAgent" parameterType="HashMap">
+				INSERT INTO Wifi_WifiAgent(LoginName,
+				            PassWord,
+				            AgentName,
+				            SeniorAgent,
+				            WifiShare,
+				            SuperiorAgentID,
+				            RouterAgentsID)
+				     VALUES(#{LoginName,jdbcType=VARCHAR},
+			              #{PassWord,jdbcType=VARCHAR},
+			              #{AgentName,jdbcType=VARCHAR},
+			              #{SeniorAgent,jdbcType=BIT},
+			              #{WifiShare,jdbcType=BIT},
+			              #{SuperAgentID,jdbcType=INTEGER},
+			              #{RouterAgentID,jdbcType=INTEGER})
+		</insert>
+		<!-- 更新代理信息 -->
+		<update id="updateAgent" parameterType="HashMap">
+				UPDATE Wifi_WifiAgent
+				    SET LoginName = #{LoginName,jdbcType=VARCHAR},
+				        PassWord = #{PassWord,jdbcType=VARCHAR},
+				        AgentName = #{AgentName,jdbcType=VARCHAR},
+				        SeniorAgent = #{SeniorAgent,jdbcType=BIT},
+				        WifiShare = #{WifiShare,jdbcType=BIT},
+				        LogoUrl = #{LogoUrl,jdbcType=VARCHAR},
+				        SuperiorAgentID = #{SuperAgentID,jdbcType=INTEGER},
+				        RouterAgentsID = #{RouterAgentID,jdbcType=INTEGER},
+				        SeniorAgentTitle = #{SeniorAgentTitle,jdbcType=VARCHAR},
+				        SeniorAgentInstruction = #{SeniorAgentInstruction,jdbcType=VARCHAR},
+				        SeniorAgentFooter = #{SeniorAgentFooter,jdbcType=VARCHAR},
+				        JumpAddr = #{JumpAddr,jdbcType=VARCHAR}
+				WHERE AgentID = #{AgentID}
+		</update>
+		<!-- 删除代理 -->
+		<delete id="deleteAgentID" parameterType="int">
+				DELETE FROM Wifi_WifiAgent WHERE AgentID = #{AgentID}
+		</delete>
+		<delete id="deleteAgentSuperID" parameterType="int">
+				DELETE FROM Wifi_WifiAgent WHERE SuperiorAgentID = #{SuperAgentID}
+		</delete>
+		
+		<!-- 以代理ID获取代理商数据对象
+			* 
+			* @param AgentID 代理ID
+			* @return AgentResultMap
+		-->
+		<select id="SelectAgentID" parameterType="int" resultMap="AgentResultMap">
+				<include refid="SelectAgentColumn"/>
+				where AgentID=#{AgentID}
+		</select>
+		
+		<!-- 取所有代理对象-->
+		<select id="SelectAgentSuperID" resultMap="AgentResultMap">
+				<include refid="SelectAgentColumn"/>
+				where SuperiorAgentID=#{SuperAgentID}
+		</select>
+		<!-- 以上级代理ID取下级所有代理对象-->
+		<select id="SelectAgentAll" resultMap="AgentResultMap">
+				<include refid="SelectAgentColumn"/>
+		</select>
+
+	
+<!-- *******************************一下代码是web界面功能配置文件，作者：parachuter****************************************************************** -->	
+		
+		<!-- 以代理LoginName获取代理商数据对象
+			* 
+			* @param  LoginName代理登陆名称
+			* @return AgentResultMap		
+		-->
+		
+		<select id="SelectLoginName" parameterType="String" resultMap="AgentResultMap">
+				<include refid="SelectAgentColumn"/>
+				where LoginName=#{LoginName}
+		</select>
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+</mapper>  

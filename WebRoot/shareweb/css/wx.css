@@ -1,0 +1,121 @@
+html{
+	height:100%;
+	font-family: sans-serif;
+}
+body {
+	    background-color: #ededed;
+	    color: #686868;
+	    font-family: "Microsoft YaHei","微软雅黑",Helvetica,"黑体",Arial,Tahoma;
+	    font-size: 14px;
+	    line-height: 19.6px;
+	    height: 100%;
+	    margin:0;
+}
+a {
+	color: #686868;
+	text-decoration: none;
+	cursor: pointer;	
+	background: 0 0;
+}
+.icon {
+	display: inline-block;
+	zoom: 1;
+}
+.mod-wifi-follow {
+	width: 100%;
+	height: 100%;
+	background-color: #fff;
+	position: relative;
+}
+.mod-wifi-page-simple__top-bar {
+	position: fixed;
+	top: 0;
+	width: 100%;
+	height: 46px;
+	background-color: #f2f2f2;
+	font-size: 14px;
+	line-height: 44px;
+	color: #6c6c6c;
+	padding-left: 20px;
+	z-index: 10000;
+}
+.mod-wifi-page-simple__icon-success {
+	background-image: url(http://3glogo.gtimg.com/tmt/proj-weixin-wifi-h5/dist/sprite/style-wifi-follow-20141231161236.png?20141231161236);
+	background-position: 0px -242px;
+	width: 27px;
+	height: 22px;
+	vertical-align: middle;
+	margin-top: -1px;
+}
+.mod-wifi-follow__content {
+	position: absolute;
+	text-align: center;
+	width: 100%;
+	top: 55%;
+	margin-top: -170px;
+}
+.mod-wifi-follow__icon-logo {
+	background-image: url(http://smny-photo.qiniudn.com/1.png); 
+	width: 73px;
+	height: 93px;
+	background-position: -85px 1px; 
+}
+.mod-wifi-follow__title {
+	font-size: 24px;
+	padding: 30px 0 15px;
+	color: #000;
+}
+.mod-wifi-follow__sub-title {
+	font-size: 17px;
+	color: #666;
+	padding-bottom: 60px;
+}
+.mod-wifi-follow__btn {
+	display: inline-block ! important;
+	padding: 0 40px;
+	height: 35px;
+	line-height: 35px;
+	background-color: #24c400;
+	border: 1px solid #24c400;
+	color: #fff;
+	-webkit-border-radius: 5px;
+	-moz-border-radius: 5px;
+	border-radius: 5px;
+	-webkit-background-clip: padding-box;
+	-moz-background-clip: padding-box;
+	background-clip: padding-box;
+}
+.mod-wifi-follow__desc {
+	padding-top: 10px;
+	font-size: 12px;
+	color: #9d9d9d;
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
