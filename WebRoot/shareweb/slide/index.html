@@ -7,9 +7,13 @@
 <title>wanwifi</title>
 <link rel="stylesheet" type="text/css" href="css/normalize.css" />
 <link rel="stylesheet" type="text/css" href="css/default.css">
-<link rel="stylesheet" href="css/flickity-docs.css" media="screen" />
-<link rel="stylesheet" href="css/wx.css?date=12012" >
-
+<link rel="stylesheet" href="css/flickity.1.0.2.css" media="screen"/>
+<link rel="stylesheet" href="css/wx.css">
+<style type="text/css">
+/* .flickity-viewport{
+	height:480px !important;
+} */
+</style>
 <!--[if IE]>
 		<script src="http://libs.useso.com/js/html5shiv/3.7/html5shiv.min.js"></script>
 <![endif]-->
@@ -21,34 +25,36 @@
 			<div id="ball1" class=""></div>
 		</div>
 	</div>
-	
+
 	<div class="container" id="container">
-		<div id="gallery" class="gallery js-flickity" data-flickity-options='{ "imagesLoaded": true, "percentPosition": false ,"pageDots": false,"prevNextButtons": false,"autoPlay": true}'>
-			<img src="img/sample-07.jpg" alt="orange tree" />
-			<img src="img/sample-08.jpg" alt="submerged" />
-			<img src="img/sample-09.jpg" alt="look-out" />
-			<img src="img/sample-10.jpg" alt="look-out" />
-			<img src="img/sample-11.jpg" alt="look-out" />
+		<div id="gallery" class="gallery">	
+			<img src="img/sample-06.jpg" alt="orange tree" /> 
+			<img src="img/sample-07.jpg" alt="orange tree" /> 
+			<img src="img/sample-08.jpg" alt="submerged" /> 
+			<img src="img/sample-09.jpg" alt="look-out"/>
 		</div>
 	</div>
-	<div class="mod-wifi-follow mode-img-parent">
+	<div class="wraboffset-hide mod-wifi-follow mode-img-parent" id="headlogo">
 		<div class="mode-img-sub">
-			<img src="img/108.png">
-			<span>圣玛尼亚软件公司</span>
+			<img src="img/108.png"> <span>圣玛尼亚软件公司</span>
 		</div>
-		
+
 	</div>
-	<div class="mod-wifi-watch">
+	<div class="wraboffset-hide mod-wifi-watch" id="watchbusi">
 		<div class="mod-wifi-follow__content">
-	        <div>
-		       <a id="watch" href="javascript:watchevent();" class="mod-wifi-follow__btn" style="display:block;">关注公众账号</a>
-		    </div>
-	        </div>
+			<div>
+				<a id="watch" href="javascript:watchevent();"
+					class="mod-wifi-follow__btn" style="display:block;">关注公众账号</a>
+			</div>
+		</div>
 	</div>
 	
-	<script src="js/flickity-docs.min.js"></script>
 	<script src="js/jquery-1.8.3.js"></script>
+	<script src="js/flickity.pkgd.1.0.2.min.js"></script>
+	
+	<script src="js/imagesloaded.pkgd.js"></script>
 	<script src="js/jquery.shCircleLoader.js"></script>
+	
 	<script type="text/javascript">
 		function watchevent(){
 			if(supportCss3()){
@@ -63,15 +69,34 @@
 			}
 		}
 		function supportCss3(style) { 
-			if(!('transform' in document.getElementById("ball").style)){       
+		    if(!('transform' in document.getElementById("ball").style)){       
 		        return false;    
 		    }else{       
 		        return true;   
 		    }
-			
 		}
+			 
 		$(function($){
-			var h = $(window).height();
+			var $gallery = $(".gallery").flickity({
+				imagesLoaded: true,
+				freeScroll: false,
+				contain: false,
+				imagesLoaded:true,
+				percentPosition:false,
+				pageDots:false,
+				prevNextButtons:false,
+				autoPlay:true
+			});
+			/* $(".flickity-viewport").css({height:"480px !important"}); */
+			var flkty = $gallery.data("flickity");
+
+			$gallery.on( "cellSelect", function() {
+			   if(flkty.selectedIndex==3){
+				   $("#headlogo").removeClass("wraboffset-hide");
+				   $("#watchbusi").removeClass("wraboffset-hide");
+			   }
+			});
+			
 			var imglist = $("#gallery img");
 			var _width,_height;
 			doDraw();
@@ -82,33 +107,36 @@
 				_width = $(window).width();
 				_height = $(window).height();
 				for( var i = 0, len = imglist.length; i < len; i++){  
-			        DrawImage(imglist[i],_width,_height);  
-			    }  
+			        	DrawImage(imglist[i],_width,_height);  
+			    	}  
 			}
 			function DrawImage(ImgD,_width,_height){
 				var image=new Image();   
-			    image.src=ImgD.src;   
-			    image.onload = function(){
-			    	if(image.width/image.height>= _width/_height){   
-		                if(image.width>_width){  
-		                    ImgD.width=_width;   
-		                    ImgD.height=(image.height*_width)/image.width;   
-		                }else{   
-		                    ImgD.width=image.width;   
-		                    ImgD.height=image.height;   
-		                }   
-		            }else{   
-		                if(image.height>_height){  
-		                    ImgD.height=_height;   
-		                    ImgD.width=(image.width*_height)/image.height;   
-		                }else{   
-		                    ImgD.width=image.width;   
-		                    ImgD.height=image.height;   
-		                }   
-		            }
+			    	image.src=ImgD.src;   
+			   	image.onload = function(){
+				    if(image.width/image.height>= _width/_height){   
+			                if(image.width>_width){  
+			                    ImgD.width=_width;
+			                    ImgD.height=(image.height*_width)/image.width;
+			                    $(document).height((image.height*_width)/image.width);
+			                }else{   
+			                    ImgD.width=image.width;   
+			                    ImgD.height=image.height;  
+			                    $(document).height(image.height);
+			                }   
+			            }else{   
+			                if(image.height>_height){  
+			                    ImgD.height=_height;   
+			                    ImgD.width=(image.width*_height)/image.height; 
+			                    $(document).height(_height);
+			                }else{   
+			                    ImgD.width=image.width;   
+			                    ImgD.height=image.height;   
+			                }   
+			            }
 			    };
-			    
-			}
+			} 
+			
 		});
 	</script>
 </body>
