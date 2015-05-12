@@ -9,11 +9,6 @@
 <link rel="stylesheet" type="text/css" href="css/default.css">
 <link rel="stylesheet" href="css/flickity.1.0.2.css" media="screen"/>
 <link rel="stylesheet" href="css/wx.css">
-<style type="text/css">
-/* .flickity-viewport{
-	height:480px !important;
-} */
-</style>
 <!--[if IE]>
 		<script src="http://libs.useso.com/js/html5shiv/3.7/html5shiv.min.js"></script>
 <![endif]-->
@@ -27,8 +22,7 @@
 	</div>
 
 	<div class="container" id="container">
-		<div id="gallery" class="gallery">	
-			<img src="img/sample-06.jpg" alt="orange tree" /> 
+		<div id="gallery" class="gallery">
 			<img src="img/sample-07.jpg" alt="orange tree" /> 
 			<img src="img/sample-08.jpg" alt="submerged" /> 
 			<img src="img/sample-09.jpg" alt="look-out"/>
@@ -43,8 +37,10 @@
 	<div class="wraboffset-hide mod-wifi-watch" id="watchbusi">
 		<div class="mod-wifi-follow__content">
 			<div>
-				<a id="watch" href="javascript:watchevent();"
-					class="mod-wifi-follow__btn" style="display:block;">关注公众账号</a>
+				<a id="watch" href="javascript:watchevent();" class="mod-wifi-follow__btn" style="display:block;">关注公众账号</a>
+				<div>
+					<input type="checkbox" checked="checked"><span>同意<a href="#">WanWiFi</a>使用协议</span> 
+				</div>
 			</div>
 		</div>
 	</div>
@@ -87,11 +83,10 @@
 				prevNextButtons:false,
 				autoPlay:true
 			});
-			/* $(".flickity-viewport").css({height:"480px !important"}); */
 			var flkty = $gallery.data("flickity");
 
 			$gallery.on( "cellSelect", function() {
-			   if(flkty.selectedIndex==3){
+			   if(flkty.selectedIndex==2){
 				   $("#headlogo").removeClass("wraboffset-hide");
 				   $("#watchbusi").removeClass("wraboffset-hide");
 			   }
