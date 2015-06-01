@@ -70,7 +70,6 @@ public class InfoTemplate extends HttpServlet {
 						}
 						//查询当前模板对应的所有的参数
 						List<Map<String,Object>> ParaList = sqlSession.selectList("RouterBatis.ParamTemplateMapper.SelectTemplateKey", TemplateID);
-						//sqlSession.selectOne("", arg1);
 						Iterator<Map<String, Object>> ParaListIterator = ParaList.iterator();
 						StringBuilder html = new StringBuilder();
 						while(ParaListIterator.hasNext()){

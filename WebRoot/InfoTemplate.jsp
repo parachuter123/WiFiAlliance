@@ -502,7 +502,7 @@
                     ADKEY = data.adkey;
                 }
             });
-    		$("#ChangeModal").modal("show");
+    	$("#ChangeModal").modal("show");
     	}else if(modelid==2){/*************************************************修改模板展示*****************************************************/
     		$.ajax({
                 type: "POST",

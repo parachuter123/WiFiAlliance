@@ -43,5 +43,6 @@
         <mapper resource="RouterBatis/WebControllerMapper.xml" />
         <mapper resource="RouterBatis/ParamTemplateMapper.xml" />
         <mapper resource="RouterBatis/TemplateParamMapper.xml" />
+        <mapper resource="RouterBatis/RouterAuthRecordMapper.xml" />
     </mappers>
 </configuration>

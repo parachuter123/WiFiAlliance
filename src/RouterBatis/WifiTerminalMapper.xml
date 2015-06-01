@@ -4,10 +4,10 @@
 		<!-- 复用sql语句  查询Wifi_WifiTerminal表所有字段 -->
 		<sql id="SelectTerminalColumn">
 				SELECT	TerminalID,
-								TerminalMac,
-								FollowersID,
-								FinalTime,
-								WifiRouterID
+					TerminalMac,
+					FollowersID,
+					FinalTime,
+					WifiRouterID
 				FROM Wifi_WifiTerminal
 		</sql>
 		<!-- Terminal 对象与数据库的对应关系-->

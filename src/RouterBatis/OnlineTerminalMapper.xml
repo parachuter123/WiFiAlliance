@@ -37,7 +37,7 @@
 										VerificationResult,
 										AccessTime,
 										WifiRouterID)
-				     VALUES(#{TerminalID},
+			VALUES(#{TerminalID},
 			              #{TerminalMac},
 			              #{TerminalIp},
 			              #{VerificationType},
@@ -100,13 +100,6 @@
 				where TerminalID like #{TerminalID}+'%'
 		</select>
 		
-		
-		
-		
-		
-		
-		
-		
 		<!-- 以上级代理ID取下级所有代理对象-->
 		<select id="SelectOnlineAll" resultMap="OnlineResultMap">
 				<include refid="SelectOnlineColumn"/>
@@ -119,11 +112,11 @@
 		</select>
 		
 <!-- *******************************一下代码是web界面功能配置文件，作者：parachuter****************************************************************** -->
-		
-		
-
-
-
+		<!-- 取所有代理对象数量-->
+		<select id="SelectCountByWifiRouterID" parameterType="String" resultType="int">
+				select count(*) from Wifi_OnlineTerminal
+				where WifiRouterID=#{WifiRouterID}
+		</select>
 
 
 </mapper>  

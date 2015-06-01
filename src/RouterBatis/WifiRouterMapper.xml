@@ -35,7 +35,11 @@
 								RouterNotice,
 								BrowseGuide,
 								ComputerGuide,
-								BrowseGuideType
+								BrowseGuideType,
+								TotalCount,
+								WeiXinCount,
+								SmsCount,
+								TryCount
 				FROM Wifi_WifiRouter
 		</sql>
 		<!-- Router 对象与数据库的对应关系-->
@@ -46,6 +50,8 @@
 						<arg javaType="String" column="STUDENT_SEX"/>
 						<arg javaType="Date" column="STUDENT_BIRTHDAY"/>
 				</constructor-->
+				
+				
 				<!--主键长度增加为200-->
 				<id      property="WifiRouterID"     column="WifiRouterID"     javaType="String"   jdbcType="VARCHAR"/>
 				<result  property="FactoryRouterID"  column="FactoryRouterID"  javaType="long"     jdbcType="BIGINT"/>
@@ -80,6 +86,18 @@
 				<result  property="BrowseGuide"  column="BrowseGuide"  javaType="String"  jdbcType="VARCHAR"/>
 				<result  property="ComputerGuide"    column="ComputerGuide"    javaType="String"   jdbcType="VARCHAR"/>
 				<result  property="BrowseGuideType"     column="BrowseGuideType"   javaType="String"   jdbcType="VARCHAR"/>
+				<!-- Online 对象与数据库的对应关系
+					TotalCount接入总数
+					WeiXinCount微信认证数
+					SmsCount短信
+					TryCount试用
+					TidingsTime路由最后接入时间，如果路由在线，就是路由接入时间，否则就是路由断开时间
+				-->
+				<result  property="TotalCount"    column="TotalCount"    javaType="int"     jdbcType="INTEGER"/>
+				<result  property="WeiXinCount"   column="WeiXinCount"   javaType="int"     jdbcType="INTEGER"/>
+				<result  property="SmsCount"      column="SmsCount"      javaType="int"     jdbcType="INTEGER"/>
+				<result  property="TryCount"      column="TryCount"      javaType="int"     jdbcType="INTEGER"/>
+				<result  property="TidingsTime"   column="TidingsTime"   javaType="Date"    jdbcType="TIMESTAMP"/>
 		</resultMap>
 		<!-- 插入代理 自动主键-->
 		<insert id="insertRouter" parameterType="HashMap">
@@ -114,7 +132,11 @@
 										RouterNotice,
 										BrowseGuide,
 										ComputerGuide,
-										BrowseGuideType)
+										BrowseGuideType,
+										TotalCount,
+										WeiXinCount,
+										SmsCount,
+										TryCount)
 				     VALUES(#{BusinesShopID,jdbcType=VARCHAR}+'>'+#{DevName,jdbcType=VARCHAR}+'.'+#{HardSeq,jdbcType=VARCHAR}+':'+LTRIM(STR(#{FactoryRouterID,jdbcType=BIGINT})),
 										#{FactoryRouterID,jdbcType=BIGINT},
 										#{HardID,jdbcType=BIGINT},
@@ -146,7 +168,12 @@
 										#{RouterNotice,jdbcType=VARCHAR},
 										#{BrowseGuide,jdbcType=VARCHAR},
 										#{ComputerGuide,jdbcType=VARCHAR},
-										#{BrowseGuideType,jdbcType=VARCHAR})
+										#{BrowseGuideType,jdbcType=VARCHAR},
+										0,
+										0,
+										0,
+										0
+										)
 		</insert>
 		<!-- 以路由数据对象更新数据库
 			* 以对象为准更新数据库
@@ -462,7 +489,11 @@
 										DefRedirect,
 										CsType,
 										UrlData,
-										HeartbeatTime)
+										HeartbeatTime,
+										TotalCount,
+										WeiXinCount,
+										SmsCount,
+										TryCount)
 				     VALUES(#{BusinesShopID,jdbcType=VARCHAR}+'>'+#{DevName,jdbcType=VARCHAR}+'.'+#{HardSeq,jdbcType=VARCHAR}+':'+LTRIM(STR(#{FactoryRouterID,jdbcType=BIGINT})),
 										#{FactoryRouterID,jdbcType=BIGINT},
 										#{HardSeq,jdbcType=VARCHAR},
@@ -479,7 +510,11 @@
 										#{DefRedirect,jdbcType=VARCHAR},
 										#{CsType,jdbcType=INTEGER},
 										#{UrlData,jdbcType=VARCHAR},
-										#{HeartbeatTime,jdbcType=VARCHAR})
+										#{HeartbeatTime,jdbcType=VARCHAR},
+										0,
+										0,
+										0,
+										0)
 		</insert>	
 
 

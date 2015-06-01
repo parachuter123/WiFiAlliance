@@ -1,0 +1,85 @@
+<?xml version="1.0" encoding="UTF-8" ?>  
+<!DOCTYPE mapper PUBLIC   "-//mybatis.org//DTD Mapper 3.0//EN"  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="RouterBatis.RouterAuthRecordMapper">
+		<!-- 复用sql语句  查询Wifi_OnlineTerminal表所有字段 -->
+		<sql id="SelectOnlineColumn">
+				SELECT	RecordID,
+					WifiRouterID,
+					AuthTime,
+					TotalCount,
+					WeiXinCount,
+					SmsCount,
+					TryCount
+				FROM Wifi_RouterAuthRecord
+		</sql>
+		<!-- Online 对象与数据库的对应关系
+			TotalCount接入总数
+			WeiXinCount微信认证数
+			SmsCount短信
+			TryCount试用
+			TidingsTime路由最后接入时间，如果路由在线，就是路由接入时间，否则就是路由断开时间
+		-->
+		<resultMap id="RouterAuthRecordResultMap" type="HashMap">
+				<id      property="RecordID"      column="RecordID"      javaType="String"  jdbcType="VARCHAR"/>
+				<result  property="WifiRouterID"  column="WifiRouterID"  javaType="String"  jdbcType="VARCHAR"/>
+				<result  property="AuthTime"      column="AuthTime"      javaType="Date"    jdbcType="TIMESTAMP"/>
+				<result  property="TotalCount"    column="TotalCount"    javaType="int"     jdbcType="INTEGER"/>
+				<result  property="WeiXinCount"   column="WeiXinCount"   javaType="int"     jdbcType="INTEGER"/>
+				<result  property="SmsCount"      column="SmsCount"      javaType="int"     jdbcType="INTEGER"/>
+				<result  property="TryCount"      column="TryCount"      javaType="int"     jdbcType="INTEGER"/>
+		</resultMap>
+		<!-- 以终端在线数据对象写入数据库
+			* 
+			* 表示终端上线
+			* 
+			* @param OnlineObject 路由数据对象
+			* @return 受影响条数(1)
+		-->
+		<insert id="insertRouterAuthRecord" parameterType="HashMap">
+				INSERT INTO Wifi_RouterAuthRecord(RecordID,
+										WifiRouterID,
+										AuthTime,
+										TotalCount,
+										WeiXinCount,
+										SmsCount,
+										TryCount)
+				     VALUES(#{WifiRouterID}+'>'+CONVERT(varchar(10),DATEADD([day],-1,GETDATE()),20),
+			              #{WifiRouterID},
+			              CONVERT(varchar(10),DATEADD([day],-1,GETDATE()),20),
+			              #{TotalCount},
+			              #{WeiXinCount},
+			              #{SmsCount},
+			              #{TryCount})
+		</insert>
+		
+		<!-- 以终端Mac地址取终端在线数据对象
+			* 理论上一个终端在此最多只有一条数据,实际因为系统错误或异常等可能会存在多个,注意处理逻辑
+			* 
+			* @param TerminalMac 终端Mac
+			* @return OnlineResultMap
+		-->
+		<select id="SelectAuthRecord" parameterType="HashMap" resultMap="RouterAuthRecordResultMap">
+				<include refid="SelectOnlineColumn"/>
+				where RecordID like #{WifiRouterID}+'%' and DATEADD([day],#{DayCount}+1,AuthTime) > GETDATE()
+		</select>
+		
+<!-- *******************************以下代码是web界面功能配置文件，作者：parachuter****************************************************************** -->
+		<!-- 
+			* 理论上一个终端在此最多只有一条数据,实际因为系统错误或异常等可能会存在多个,注意处理逻辑
+			* 
+			* @param TerminalMac 终端Mac
+			* @return OnlineResultMap
+		-->
+		<select id="SelectAuthRecordSum" parameterType="HashMap" resultMap="RouterAuthRecordResultMap">
+				select  WifiRouterID,
+							sum(TotalCount) as TotalCount,
+							sum(WeiXinCount) as WeiXinCount,
+							sum(SmsCount) as SmsCount,
+							sum(TryCount) as TryCount
+						    FROM Wifi_RouterAuthRecord
+				where RecordID like #{WifiRouterID}+'%' and DATEADD([day],#{DayCount}+1,AuthTime) > GETDATE() 
+				group by WifiRouterID
+		</select>
+		
+
+</mapper>  

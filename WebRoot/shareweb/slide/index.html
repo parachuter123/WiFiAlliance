@@ -85,6 +85,7 @@
 				prevNextButtons:false,
 				autoPlay:true
 			});
+			console.log($("#imgnav").css("display"));
 			var flkty = $gallery.data("flickity");
 
 			$gallery.on( "cellSelect", function() {
@@ -92,6 +93,9 @@
 				   $("#headlogo").removeClass("wraboffset-hide");
 				   $("#watchbusi").removeClass("wraboffset-hide");
 			   }
+			});
+			$gallery.on( "pointerDown", function( event, pointer ) {
+				autoPlay:true
 			});
 			
 			var imglist = $("#gallery img");

@@ -126,7 +126,17 @@ public class ShopList extends HttpServlet {
 			            BusinessShop.put("NatureID", BusinessNature);
 			            BusinessShop.put("ProCityID", ProCity);
 			            BusinessShop.put("WifiShare", WifiShare.equals("true")?1:0);
+			            //为商家自动创建手机浏览器模板、电脑模板、微信关注模板
+			            Map<String,Object> InfoIphoneMap = this.createInfoMap(Operator,LoginName,Integer.parseInt(properties.getValue("InfoIphoneType")),"手机浏览器模板",
+			            		"手机浏览器模板",properties.getValue("InfoIphoneModel"),properties.getValue("InfoIphoneTemplateID"),(String)getInfoMap(sqlSession,Integer.parseInt(properties.getValue("InfoIphoneTemplateID"))).get("TemplatePage"));
+			            Map<String,Object> InfoPcMap = this.createInfoMap(Operator,LoginName,Integer.parseInt(properties.getValue("InfoPcType")),"电脑浏览器模板",
+			            		"电脑浏览器模板",properties.getValue("InfoPcModel"),properties.getValue("InfoPcTemplateID"),(String)getInfoMap(sqlSession,Integer.parseInt(properties.getValue("InfoPcTemplateID"))).get("TemplatePage"));
+			            Map<String,Object> InfoWatchMap = this.createInfoMap(Operator,LoginName,Integer.parseInt(properties.getValue("InfoWatchType")),"关注模板",
+			            		"关注模板",properties.getValue("InfoWatchModel"),properties.getValue("InfoWatchTemplateID"),(String)getInfoMap(sqlSession,Integer.parseInt(properties.getValue("InfoWatchTemplateID"))).get("TemplatePage"));
 			            try {
+			            	sqlSession.insert("RouterBatis.InfoTemplateMapper.insertInfo",InfoIphoneMap);
+			            	sqlSession.insert("RouterBatis.InfoTemplateMapper.insertInfo",InfoPcMap);
+			            	sqlSession.insert("RouterBatis.InfoTemplateMapper.insertInfo",InfoWatchMap);
 							sqlSession.insert("RouterBatis.BusinesShopMapper.insertBusinesShop",BusinessShop);
 							sqlSession.commit();
 							request.setAttribute("Operat","1");
@@ -262,80 +272,7 @@ public class ShopList extends HttpServlet {
 						request.getRequestDispatcher("/AuthJsonError.jsp").forward(request, response);
 						return;
 					}
-					break;/*
-				case 3:
-					if("createBusinessShop".equals(Type)){
-						Map<String,Object> Agent = sqlSession.selectOne("RouterBatis.AgentMapper.SelectAgentID", Integer.parseInt(Operator));
-						if(Agent == null){
-							request.setAttribute("Operat","2");
-							request.setAttribute("ErrorMessage","没有该代理");
-							request.getRequestDispatcher("/AuthJsonError.jsp").forward(request, response);
-							return;
-						}
-						String AgentID = Agent.get("AgentID").toString();
-						String BusinessName = request.getParameter("BusinessName");
-			            String LoginName = request.getParameter("LoginName");
-			            String BusinessAddress = request.getParameter("BusinessAddress");
-			            String BusinessBoss = request.getParameter("BusinessBoss");
-			            String BossMobile = request.getParameter("BossMobile");
-			            String BusinessContact = request.getParameter("BusinessContact");
-			            String ContactMobile = request.getParameter("ContactMobile");
-			            String BusinessFax = request.getParameter("BusinessFax");
-			            String Industry = request.getParameter("Industry");
-			            String BusinessNature = request.getParameter("BusinessNature");
-			            String ProCity = request.getParameter("ProCity");
-			            String WifiShare = request.getParameter("WifiShare");
-			            if (StringToolkit.isNullOrEmpty(BusinessName, LoginName, BusinessAddress, BusinessBoss,
-			                    BossMobile, BusinessContact, ContactMobile, WifiShare)) {
-			            	request.setAttribute("Operat","2");
-							request.setAttribute("ErrorMessage","创建参数不完整");
-							request.getRequestDispatcher("/AuthJsonError.jsp").forward(request, response);
-			                return;
-			            }
-			            if(StringToolkit.isNullOrEmpty(Industry)){
-			                Industry = "0";
-			            }
-			            if(StringToolkit.isNullOrEmpty(BusinessNature)){
-			                BusinessNature = "0";
-			            }
-			            if(StringToolkit.isNullOrEmpty(ProCity)){
-			                ProCity = "0";
-			            }
-			            if(sqlSession.selectOne("RouterBatis.BusinesShopMapper.SelectLoginName", LoginName)!=null){
-			            	request.setAttribute("Operat","3");
-							request.setAttribute("ErrorMessage","已经存在该商家，请更换登陆名称！！！");
-							request.getRequestDispatcher("/AuthJsonError.jsp").forward(request, response);
-							return;
-			            }
-			            Map<String,Object> BusinessShop = new HashMap<String,Object>();
-			            BusinessShop.put("AgentID", Integer.parseInt(AgentID));
-			            BusinessShop.put("BusinesName", BusinessName);
-			            BusinessShop.put("LoginName", LoginName);
-			            BusinessShop.put("PassWord", LoginName);
-			            BusinessShop.put("BusinesAddres", BusinessAddress);
-			            BusinessShop.put("BusinesBoss", BusinessBoss);
-			            BusinessShop.put("BossMobile", BossMobile);
-			            BusinessShop.put("BusinesContact", BusinessContact);
-			            BusinessShop.put("ContactMobile", ContactMobile);
-			            BusinessShop.put("BusinesFax", BusinessFax);
-			            BusinessShop.put("IndustryID", Industry);
-			            BusinessShop.put("NatureID", BusinessNature);
-			            BusinessShop.put("ProCityID", ProCity);
-			            BusinessShop.put("WifiShare", WifiShare.equals("true")?1:0);
-			            try {
-							sqlSession.insert("RouterBatis.BusinesShopMapper.insertBusinesShop",BusinessShop);
-							sqlSession.commit();
-							request.setAttribute("Operat","1");
-							request.setAttribute("ErrorMessage","商家创建成功！！");
-						} catch (Exception e) {
-							request.setAttribute("Operat","-2");
-							request.setAttribute("ErrorMessage",e.getMessage().replace("\r\n", ""));
-							request.setAttribute("ShowBug",properties.getValue("ShowBug"));
-							request.setAttribute("SysErrorPointOut",properties.getValue("SysErrorPointOut"));
-						} 
-						request.getRequestDispatcher("/AuthJsonError.jsp").forward(request, response);
-					}
-					break;*/
+					break;
 				default:
 					request.setAttribute("Operat","-2");
 					request.setAttribute("ErrorMessage","角色选择错误:"+UserType);
@@ -417,5 +354,32 @@ public class ShopList extends HttpServlet {
 		}finally{
 			sqlSession.close();
 		}
+    }
+    /**
+     * 创建一个广告模板
+     * @param Operator			代理ID
+     * @param LoginName		登陆名称
+     * @param Type					广告类型
+     * @param Name				广告名称
+     * @param Remark			广告备注
+     * @param Model				模板类型
+     * @param TemplateID		模板ID
+     * @param Content			模板内容
+     * @return				
+     */
+    private Map<String,Object> createInfoMap(String Operator,String LoginName,int Type,String Name,String Remark,String Model,String TemplateID,String Content){
+    	Map<String,Object> InfoMap = new HashMap<String,Object>();
+    	InfoMap.put("BusinesShopID",Operator + "_" + LoginName);
+    	InfoMap.put("Name",Name);
+    	InfoMap.put("Type",Type);
+    	InfoMap.put("Remark",Remark);
+    	InfoMap.put("Model",Model);
+    	InfoMap.put("TemplateID", TemplateID);
+    	InfoMap.put("Content", Content);
+        return InfoMap;
+    }
+    private Map<String,Object> getInfoMap(SqlSession sqlSession,int content){
+    	Map<String,Object> InteriorTemplate = sqlSession.selectOne("RouterBatis.InteriorTemplateMapper.SelectTemplateID",content);
+    	return InteriorTemplate;
     }
 }

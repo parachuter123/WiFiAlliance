@@ -33,10 +33,69 @@
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
     <!-- <script type="text/javascript" src="./js/jquery-1.8.3.min.js"></script> -->
     <script type="text/javascript" src="http://code.jquery.com/jquery-1.8.3.min.js"></script>
-    
     <script type="text/javascript">
-   
-  //value=[5,3,6,5,90,4,34,23,12];
+
+	var authTime = [];
+	var WeiXinCount = [];
+	var SmsCount = [];
+	var TryCount = [];
+	var RouterAuthRecordList = '${requestScope.RouterAuthRecordList}';
+	var RouterAuthRecordListJson = JSON.parse(RouterAuthRecordList);
+	function routerListJson(RouterAuthRecordListJson){
+		$.each(RouterAuthRecordListJson,function(key,value){
+			authTime.push(value.AuthTime); 
+			WeiXinCount.push(value.WeiXinCount);
+			SmsCount.push(value.SmsCount);
+			TryCount.push(value.TryCount); 
+		}); 
+	}
+	function containerResult(){
+		$('#container').highcharts({
+            title: {
+                text: '认证人数统计',
+                x: -20 //center
+            },
+            subtitle: {
+                text: '来源：圣玛尼亚',
+                x: -20
+            },
+            xAxis: {
+                categories: authTime
+            },
+            yAxis: {
+                title: {
+                    text: '人数(个)'
+                },
+                plotLines: [{
+                    value: 0,
+                    width: 1,
+                    color: '#808080'
+                }]
+            },
+            tooltip: {
+                valueSuffix: '个'
+            },
+            legend: {
+                layout: 'vertical',
+                align: 'right',
+                verticalAlign: 'middle',
+                borderWidth: 0
+            },
+            credits: {
+                enabled: false
+            },
+            series: [{
+                name: '微信',
+                data: WeiXinCount
+            }, {
+                name: '短信',
+                data: SmsCount
+            }, {
+                name: '试用',
+                data: TryCount
+            }]
+        });
+	}
 	$(function(){
 		var key = '${requestScope.key}';
 		key= key.substring(1, key.length-1);
@@ -97,6 +156,8 @@
 		                data: value
 		            }]
 		});
+		routerListJson(RouterAuthRecordListJson);
+		containerResult();
 	}); 
     </script>
     
@@ -106,7 +167,7 @@
 <div class="navbar navbar-fixed-top">
 
     <div class="navbar-inner">
-
+		
         <div class="container">
 
             <a class="btn btn-navbar" data-toggle="collapse" data-target=".nav-collapse">
@@ -221,20 +282,49 @@
                     <!-- /widget-header -->
 
                     <div class="widget-content">
-                        路由器状态：<span class="label label-success">正在运行</span>
-                        <br/>服务器状态：<span class="label label-success">连接成功</span>
-                        <br/>公众账号状态：<span class="label label-success">正常</span>
-
+	                        <strong>在线总人数：<span class="label label-success">${requestScope.OnlineCount}</span></strong><br/>
+	                        <strong>在线已认证人数</strong><br/>
+	                        &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;微信认证人数：<span class="label label-success">${requestScope.WeiXinCount}</span>
+	                        	  短信认证人数：<span class="label label-success">${requestScope.SmsCount}</span>
+	                        	  试用认证人数：<span class="label label-success">${requestScope.TryCount}</span><br/><hr/>
+	                        <%-- <strong>累计认证人数</strong><br/>
+	                        &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;微信认证人数：<span class="label label-success">${requestScope.SumWeiXinCount}</span>
+	                        	  短信认证人数：<span class="label label-success">${requestScope.SumSmsCount}</span>
+	                        	  试用认证人数：<span class="label label-success">${requestScope.SumTryCount}</span><br/>
+					        <strong>选择时间分割点
+						        <select name="overrallperiodOfTime" id="overrallperiodOfTime" style="width:70px; margin-bottom:3px;" onchange="overrallperiodOfTime(this.options[this.selectedIndex].value)">
+							      <option selected="selected" value="1">今日</option>
+							      <option value="7">本周</option>
+							      <option value="30">本月</option>
+							      <option value="90">本季</option>
+						        </select>
+					        </strong><br/>
+					        &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;微信认证人数：<span class="label label-success" id="overrallSumWeixinCount">${requestScope.SumWeiXinCount}</span>
+	                        	  短信认证人数：<span class="label label-success" id="overrallSumSmsCount">${requestScope.SumSmsCount}</span>
+	                        	  试用认证人数：<span class="label label-success" id="overrallSumTryCount">${requestScope.SumTryCount}</span> --%>
+	                        <select name="WifiRouterID" id="WifiRouterID" style="width:70px; margin-bottom:3px;" onchange="overrallperiodOfTime(this.options[this.selectedIndex].value,' ')">
+		                        <option selected="selected" value="">moren</option>
+		                        <c:forEach items="${requestScope.Routerlist}" var="Router" varStatus="sta">
+		                        	 
+		                        	l<option value="${Router.get('WifiRouterID') }">${Router.get('WifiRouterDevName') }</option>
+		                        </c:forEach>
+	                        </select>
+	                        <select name="WifiRouterTime" id="WifiRouterTime" style="width:70px; margin-bottom:3px;" onchange="overrallperiodOfTime(' ',this.options[this.selectedIndex].value)">
+		                          <option selected="selected" value="7">7天</option>
+							      <option value="14">14天</option>
+							      <option value="30">一个月</option>
+	                        </select>
+	                        <div id="container" style="min-width: 310px; height: 400px; margin: 0 auto"></div>	  
                         <hr/>
                         ${requestScope.AgentNum}
                         <c:forEach items="${requestScope.Routerlist}" var="Router" varStatus="sta">
                             <c:choose>
-                                <c:when test="${requestScope.isOnLine}">
-                                    [${Router.get("DevName")}] 在线设备数目：<span class="label label-info">${requestScope.OnlineTerminalGET.getOnlineDatas(Router.get("WifiRouterID")).size()}</span>
+                                <c:when test="${Router.get('isOnline')}">
+                                    [${Router.get("WifiRouterDevName")}]<span class='label label-success'>在线</span>
                                     <br/>
                                 </c:when>
                                 <c:otherwise>
-                                    [${Router.get("DevName")}] 当前路由器不在线！！
+                                    [${Router.get("WifiRouterDevName")}] <span class='label label-important'>不在线</span>
                                     <br/>
                                 </c:otherwise>
                             </c:choose>
@@ -244,9 +334,7 @@
 
                 </div>
                 <!-- /widget -->
-		<c:if test="${sessionScope.UserType==2 }">
 		
-		</c:if>
 		<c:if test="${sessionScope.UserType==3||sessionScope.UserType==2 }">
                 <div class="widget">
 
@@ -324,7 +412,7 @@
 		<!-- /.modal -->
 		<!-- 路由器详细信息End -->
 
-                <c:forEach items="${requestScope.Applist}" var="App" varStatus="sta">
+                <%-- <c:forEach items="${requestScope.Applist}" var="App" varStatus="sta">
                     <div class="widget">
 
                         <div class="widget-header">
@@ -380,7 +468,7 @@
 
                     </div>
                     <!-- /widget -->
-                </c:forEach>
+                </c:forEach> --%>
 		<c:if test="${sessionScope.UserType==4 }">
 			<div class="widget">
 	
@@ -433,7 +521,7 @@
 <script src="./js/jquery.flot.pie.js"></script>
 <script src="./js/jquery.flot.orderBars.js"></script>
 <!-- <script src="./js/jquery.flot.resize.js"></script>干扰highcharts图表自动显示-->
-<script src="//code.jquery.com/ui/1.11.4/jquery-ui.js"></script>
+<script src="http://code.jquery.com/ui/1.11.4/jquery-ui.js"></script>
 
 <script src="./js/bootstrap.js"></script> 
 <script src="./js/highcharts/highcharts.js"></script>
@@ -447,6 +535,7 @@
 			url:"/Dashboard.htm",
 			dataType:"html",
 			data:{
+				type:"getRouterDetail",
 				businessShop:businessShopID
 			},
 			success:function(data){
@@ -455,16 +544,44 @@
 			}
 		});
 	}
-	function periodOfTime(selectval){
+	function periodOfTime(Smsselectval){
 		$.ajax({
 			type:"POST",
 			url:"/Dashboard.htm",
 			dataType:"json",
 			data:{
-				timeperiods:selectval
+				type:"SMSstatistics",
+				timeperiods:Smsselectval
 			},
 			success:function(data){
 				$("#TodayPhoneWatch").html(data.TodayPhoneWatch);
+			}
+		});
+	}
+	function overrallperiodOfTime(selectval,time){
+		var tempTime,tempselectval;
+		if(selectval== ' '){
+			tempselectval = $("#WifiRouterID").val();
+			alert(tempselectval);
+		}else if(time== ' '){
+			tempTime = $("#WifiRouterTime").val();
+		}
+		$.ajax({
+			type:"POST",
+			url:"/Dashboard.htm",
+			dataType:"json",
+			data:{
+				type:"overrallStatistics",
+				timeperiods:tempTime,
+				WifiRouterChoose:tempselectval
+			},
+			success:function(data){
+				var RouterAuthRecordList = data.RouterAuthRecordList;
+				console.log(RouterAuthRecordList);
+				var RouterAuthRecordListJson = JSON.parse(RouterAuthRecordList);
+				
+				routerListJson(RouterAuthRecordListJson);
+				containerResult();
 			}
 		});
 	}

@@ -243,41 +243,41 @@
                 <form role="form" id="CreateForm">
                     <div class="form-group">
                         <label for="BusinessName">商家名称<span style="color:#E53333;">*</span></label>
-                        <input type="text" class="form-control" id="BusinessName">
+                        <input type="text" class="form-control" id="BusinessName" autocomplete="on">
                     </div>
                     <div class="form-group">
                         <label for="LoginName">登录名称<span style="color:#E53333;">*输入登录名称只能以英文字母开头，不分大小写，长度大于3，小于10</span></label>
-                        <input type="text" class="form-control" id="LoginName">
+                        <input type="text" class="form-control" id="LoginName" autocomplete="on">
                     </div>
                     <div class="form-group">
                         <label for="BusinessAddress">地址<span style="color:#E53333;">*</span></label>
-                        <input type="text" class="form-control" id="BusinessAddress">
+                        <input type="text" class="form-control" id="BusinessAddress" autocomplete="on">
                     </div>
                     <div class="form-group">
                         <label for="BusinessBoss">负责人<span style="color:#E53333;">*</span></label>
-                        <input type="text" class="form-control" id="BusinessBoss">
+                        <input type="text" class="form-control" id="BusinessBoss" autocomplete="on">
                     </div>
                     <div class="form-group">
                         <label for="BossMobile">负责人电话<span style="color:#E53333;">*</span></label>
-                        <input type="text" class="form-control" id="BossMobile">
+                        <input type="text" class="form-control" id="BossMobile" autocomplete="on">
                     </div>
                     <div class="form-group">
                         <label for="BusinessContact">联系人<span style="color:#E53333;">*</span></label>
-                        <input type="text" class="form-control" id="BusinessContact">
+                        <input type="text" class="form-control" id="BusinessContact" autocomplete="on">
                     </div>
                     <div class="form-group">
                         <label for="ContactMobile">联系人电话<span style="color:#E53333;">*</span></label>
-                        <input type="text" class="form-control" id="ContactMobile">
+                        <input type="text" class="form-control" id="ContactMobile" autocomplete="on">
                     </div>
                     <div class="form-group">
                         <label for="BusinessFax">传真</label>
-                        <input type="text" class="form-control" id="BusinessFax">
+                        <input type="text" class="form-control" id="BusinessFax" autocomplete="on">
                     </div>
 
 
-                    <input type="hidden" class="form-control" id="BusinessNature" name="BusinessNature" value="0">
-                    <input type="hidden" class="form-control" id="ProCity" name="ProCity"  value="0">
-                    <input type="hidden"  class="form-control" id="Industry" name="Industry"  value="0">
+                    <input type="hidden" class="form-control" id="BusinessNature" name="BusinessNature" value="0" autocomplete="on">
+                    <input type="hidden" class="form-control" id="ProCity" name="ProCity"  value="0" autocomplete="on">
+                    <input type="hidden"  class="form-control" id="Industry" name="Industry"  value="0" autocomplete="on">
                     <div class="form-group">
                         <label for="AreaSelectDIV">城市</label>
                         <div id="AreaSelectDIV">
@@ -345,19 +345,6 @@
     var PageIndex = ${requestScope.PageIndex}; 
 
     function CreateShop(){
-    	
-        $("#BusinessName").val("");
-        $("#LoginName").val("");
-        $("#BusinessAddress").val("");
-        $("#BusinessBoss").val("");
-        $("#BossMobile").val("");
-        $("#BusinessContact").val("");
-        $("#ContactMobile").val("");
-        $("#BusinessFax").val("");
-        $("#Industry").val("");
-        $("#BusinessNature").val("");
-        $("#ProCity").val("");
-        $("#WifiShare").val("");
         document.getElementById("ChangeModalLabel").innerText ="新建用户";
         $("#CreateShop").modal("show");
     }
